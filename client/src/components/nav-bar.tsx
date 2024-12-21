@@ -28,9 +28,9 @@ export const NavBar = () => {
         className={cn("text-sm", pathname === "/cases" && "font-bold")}
       >
         Cases
-      </Link>
+      </Link>{" "}
       <Link href="/new-case">
-        <Button className="flex gap-2" variant="outline" size="sm">
+        <Button className="flex gap-2" variant="secondary" size="sm">
           <Plus className="h-4 w-4" /> New Case
         </Button>
       </Link>

@@ -5,6 +5,9 @@ export const issueColumns: ColumnDef<Issue>[] = [
   {
     accessorKey: "category",
     header: "Category",
+    cell: ({ row }) => {
+      return <div className="text-center">{row.getValue("category")}</div>;
+    },
   },
   {
     accessorKey: "name",
@@ -17,6 +20,9 @@ export const issueColumns: ColumnDef<Issue>[] = [
   {
     accessorKey: "duration",
     header: "Duration",
+    cell: ({ row }) => {
+      return <div className="text-center">{row.getValue("duration")}</div>;
+    },
   },
   {
     accessorKey: "tenantEvidence",
@@ -33,10 +39,20 @@ export const issueColumns: ColumnDef<Issue>[] = [
   {
     accessorKey: "decision",
     header: "Decision",
+    cell: ({ row }) => {
+      return <div className="text-center">{row.getValue("decision")}</div>;
+    },
   },
   {
     accessorKey: "reliefGranted",
     header: "Relief Granted",
+    cell: ({ row }) => {
+      return (
+        <div className="text-center">
+          {row.getValue("reliefGranted") ? "Yes" : "No"}
+        </div>
+      );
+    },
   },
   {
     accessorKey: "reliefDescription",
@@ -52,7 +68,7 @@ export const issueColumns: ColumnDef<Issue>[] = [
         currency: "USD",
       }).format(amount);
 
-      return <div className="text-right font-medium">{formatted}</div>;
+      return <div className="text-center">{formatted}</div>;
     },
   },
   {
