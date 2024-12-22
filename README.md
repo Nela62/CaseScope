@@ -7,11 +7,17 @@ An open-source tool helping legal aid organizations support tenants by analyzing
 - The app will assist in petition preparation
 
 - Uses open source models for extraction and prediction
-- Built with Next.js, Tailwind, Lucide, Shadcn/UI, Supabase, Vercel, and MongoDB
-- Trigger.dev for extracting key issues from past cases
-- Uses Hugging Face for hosting llama-3.3-70b-versatile
+- Built with Next.js, Typescript, Tailwind, Lucide, Shadcn/UI, Supabase, and Vercel
+- Using Claude 3.5 Sonnet for data extraction
 
 ## Getting Started
+
+- Full setup of uploading custom documents, securing them, extracting data from them, storing them in a database, embedding them and storing that in a database
+- Perfect as a starting point for any legal aid organization looking to support tenants by analyzing historical hearing records or anyone looking for a template to build their own extraction tool
+
+- Full setup of uploading custom documents, which get parsed using llama parser, uploaded to supabase and supabase storage, embedded and stored in supabase vector database
+- Database and storage have RLS policies setup for ensuring that only the right users have access to the right data
+- Supabase for authentication
 
 
 ## Authors

@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  webpack: (config, { isServer }) => {
+  webpack: (config) => {
     // Exclude onnxruntime-node from webpack bundling
     config.externals = [
       ...(config.externals || []),
