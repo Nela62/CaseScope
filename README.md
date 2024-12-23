@@ -26,6 +26,7 @@ An open-source tool helping legal aid organizations support tenants by analyzing
 - [Create a supabase account and a new project](https://supabase.com/)
   - Get the supabase anon key and url
   - Enable anonymous sign-ins in the supabase dashboard (Settings -> Authentication -> Enable anonymous sign-ins)
+  - If you enable captcha, you won't be able to run localhost app unless you're using local supabase inside of Docker
 - [Create an aws account](https://aws.amazon.com/)
   - Request access to the Claude 3.5 Sonnet model
   - Give full access to aws bedrock
