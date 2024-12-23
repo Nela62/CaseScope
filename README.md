@@ -19,6 +19,12 @@ An open-source tool helping legal aid organizations support tenants by analyzing
 - Database and storage have RLS policies setup for ensuring that only the right users have access to the right data
 - Supabase for authentication
 
+## To Set Up
+- Create an account and project on supabase 
+- Link the project to this repository by running `supabase link --project-ref client`
+- Add the required credentials to the `.env.local.example` file and rename it to `.env.local`
+- Run `pnpm install` to install the dependencies
+- Run `pnpm dev:all` to start the development server and inngest server
 
 ## Authors
 - Helen Kochetkova

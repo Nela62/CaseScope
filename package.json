@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "inngest:dev": "npx inngest-cli@latest dev --no-discovery -u http://localhost:3000/api/inngest",
+    "dev:all": "concurrently \"pnpm dev\" \"pnpm inngest:dev\""
   },
   "dependencies": {
     "@llamaindex/community": "^0.0.77",
@@ -18,6 +20,7 @@
     "@tanstack/react-table": "^8.20.6",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "inngest": "^3.28.0",
     "llamaindex": "^0.8.30",
     "lucide-react": "^0.468.0",
     "next": "15.1.0",
@@ -33,6 +36,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "concurrently": "^9.1.0",
     "eslint": "^9",
     "eslint-config-next": "15.1.0",
     "postcss": "^8",
