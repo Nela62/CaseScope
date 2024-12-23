@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "next lint",
     "inngest:dev": "npx inngest-cli@latest dev --no-discovery -u http://localhost:3000/api/inngest",
-    "dev:all": "concurrently \"pnpm dev\" \"pnpm inngest:dev\""
+    "dev:all": "concurrently \"pnpm dev\" \"pnpm inngest:dev\"",
+    "update-types": "supabase gen types typescript --linked --schema=public > src/lib/supabase/database.types.ts",
+    "update-local-types": "supabase gen types typescript --local --schema=public,ai > src/lib/supabase/database.types.ts"
   },
   "dependencies": {
     "@llamaindex/community": "^0.0.77",

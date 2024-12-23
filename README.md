@@ -18,13 +18,22 @@ An open-source tool helping legal aid organizations support tenants by analyzing
 - Full setup of uploading custom documents, which get parsed using llama parser, uploaded to supabase and supabase storage, embedded and stored in supabase vector database
 - Database and storage have RLS policies setup for ensuring that only the right users have access to the right data
 - Supabase for authentication
+- Inngest for serverless functions
 
-## To Set Up
-- Create an account and project on supabase 
-- Link the project to this repository by running `supabase link --project-ref client`
+## How to Set It Up
+- [Download docker](https://docs.docker.com/get-started/get-docker/) 
+- [Install supabase CLI](https://supabase.com/docs/guides/local-development/cli/getting-started)
+- [Create a supabase account and a new project](https://supabase.com/). Get the supabase anon key and url
+- [Create an aws account](https://aws.amazon.com/), request access to the Claude 3.5 Sonnet model, and get the access and secret keys (make sure it's not your root account. give full access to aws bedrock)
 - Add the required credentials to the `.env.local.example` file and rename it to `.env.local`
-- Run `pnpm install` to install the dependencies
-- Run `pnpm dev:all` to start the development server and inngest server
+- Run `make init PROJECT_ID=<supabase project id>`. You can get <project-id> from your project's dashboard URL: https://supabase.com/dashboard/project/<project-id>. This will  prompt you to login to supabase and link the project to this repository.
+- Run `make dev` to start the development server and inngest server
+
+### Local Development
+- Run `make supabase` to start the supabase server
+- Make sure that `.env.local` contains the local supabase credentials
+- Run `make dev` to start the development server and inngest server
+
 
 ## Authors
 - Helen Kochetkova
