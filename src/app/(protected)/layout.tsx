@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
-
 import { createClient } from "@/lib/supabase/server";
+import { UserProvider } from "@/providers/user-provider";
 
 export default async function ProtectedLayout({
   children,
@@ -10,17 +10,22 @@ export default async function ProtectedLayout({
   const supabase = await createClient();
 
   const { data, error } = await supabase.auth.getUser();
+
   if (error || !data?.user) {
     if (!!process.env.IS_DEMO) {
-      console.log("signing in anonymously");
       const { data, error } = await supabase.auth.signInAnonymously();
-      if (error) {
+
+      if (error || !data?.user) {
         throw error;
       }
+
+      console.log(data.user);
+
+      return <UserProvider userId={data.user.id}>{children}</UserProvider>;
     } else {
       redirect("/login");
     }
   }
 
-  return <div>{children}</div>;
+  return <UserProvider userId={data.user.id}>{children}</UserProvider>;
 }

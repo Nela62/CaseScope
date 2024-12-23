@@ -9,11 +9,39 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      documents: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          updated_at: string
+          url: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          updated_at?: string
+          url: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          updated_at?: string
+          url?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       hearing_cases: {
         Row: {
           case_numbers: string[]
           created_at: string
           decision: string
+          document_id: string
           hearing_dates: string[]
           hearing_officer: string
           id: string
@@ -29,6 +57,7 @@ export type Database = {
           case_numbers: string[]
           created_at?: string
           decision: string
+          document_id: string
           hearing_dates: string[]
           hearing_officer: string
           id?: string
@@ -44,6 +73,7 @@ export type Database = {
           case_numbers?: string[]
           created_at?: string
           decision?: string
+          document_id?: string
           hearing_dates?: string[]
           hearing_officer?: string
           id?: string
@@ -55,7 +85,15 @@ export type Database = {
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "hearing_cases_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       issues: {
         Row: {

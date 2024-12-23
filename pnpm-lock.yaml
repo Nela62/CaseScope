@@ -29,12 +29,18 @@ importers:
       '@supabase-cache-helpers/postgrest-react-query':
         specifier: ^1.11.4
         version: 1.11.4(@supabase/postgrest-js@1.17.7)(@supabase/supabase-js@2.47.10)(@tanstack/react-query@5.62.8(react@19.0.0))(react@19.0.0)
+      '@supabase-cache-helpers/storage-react-query':
+        specifier: ^1.2.4
+        version: 1.2.4(@supabase/storage-js@2.7.1)(@tanstack/react-query@5.62.8(react@19.0.0))(react@19.0.0)
       '@supabase/ssr':
         specifier: ^0.5.2
         version: 0.5.2(@supabase/supabase-js@2.47.10)
       '@supabase/supabase-js':
         specifier: ^2.47.10
         version: 2.47.10
+      '@tanstack/react-query':
+        specifier: ^5.62.8
+        version: 5.62.8(react@19.0.0)
       '@tanstack/react-table':
         specifier: ^8.20.6
         version: 8.20.6(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -47,6 +53,9 @@ importers:
       '@uppy/drag-drop':
         specifier: ^4.0.5
         version: 4.0.5(@uppy/core@4.3.1)
+      '@uppy/dropbox':
+        specifier: ^4.1.2
+        version: 4.1.2(@uppy/core@4.3.1)
       '@uppy/file-input':
         specifier: ^4.0.4
         version: 4.0.4(@uppy/core@4.3.1)
@@ -56,6 +65,9 @@ importers:
       '@uppy/react':
         specifier: ^4.0.4
         version: 4.0.4(@uppy/core@4.3.1)(@uppy/dashboard@4.1.3(@uppy/core@4.3.1))(@uppy/drag-drop@4.0.5(@uppy/core@4.3.1))(@uppy/file-input@4.0.4(@uppy/core@4.3.1))(@uppy/progress-bar@4.1.0(@uppy/core@4.3.1))(@uppy/status-bar@4.0.6(@uppy/core@4.3.1))(react@19.0.0)
+      '@uppy/transloadit':
+        specifier: ^4.1.4
+        version: 4.1.4(@uppy/core@4.3.1)
       '@uppy/url':
         specifier: ^4.1.2
         version: 4.1.2(@uppy/core@4.3.1)
@@ -92,6 +104,9 @@ importers:
       tailwindcss-animate:
         specifier: ^1.0.7
         version: 1.0.7(tailwindcss@3.4.16)
+      zustand:
+        specifier: ^5.0.2
+        version: 5.0.2(@types/react@19.0.1)(react@19.0.0)(use-sync-external-store@1.4.0(react@19.0.0))
     devDependencies:
       '@eslint/eslintrc':
         specifier: ^3
@@ -1415,6 +1430,16 @@ packages:
       '@tanstack/react-query': ^4.0.0 || ^5.0.0
       react: ^16.11.0 || ^17.0.0 || ^18.0.0
 
+  '@supabase-cache-helpers/storage-core@0.0.6':
+    resolution: {integrity: sha512-RTyCLc0WqiHuu/1WLrtyArI9kv10eeqs0j5SKFfzGn36WEH1UUruIRHCGwIGc2NjJfO+co6tPyPHlvWp2r23yw==}
+
+  '@supabase-cache-helpers/storage-react-query@1.2.4':
+    resolution: {integrity: sha512-xMRbimLpZz+BewDaH6mPVI0T96/dFZJKFJ78NkHwWKEw7mJbh4If8XaiEbZk5lM1sz1Yw1kRIsusfxcY3SXSrQ==}
+    peerDependencies:
+      '@supabase/storage-js': ^2.7.1
+      '@tanstack/react-query': ^4.0.0 || ^5.0.0
+      react: ^16.11.0 || ^17.0.0 || ^18.0.0
+
   '@supabase/auth-js@2.67.3':
     resolution: {integrity: sha512-NJDaW8yXs49xMvWVOkSIr8j46jf+tYHV0wHhrwOaLLMZSFO4g6kKAf+MfzQ2RaD06OCUkUHIzctLAxjTgEVpzw==}
 
@@ -1609,6 +1634,11 @@ packages:
     peerDependencies:
       '@uppy/core': ^4.3.0
 
+  '@uppy/dropbox@4.1.2':
+    resolution: {integrity: sha512-Ov9cc/DikO8vOf0Qq4r9+Isg0YfOe7B4LB6rPx6jW4ZsS03FOmyQAp+XbQxtSwRhbwSg8Oa5x1RitlohbUxNYA==}
+    peerDependencies:
+      '@uppy/core': ^4.3.0
+
   '@uppy/file-input@4.0.4':
     resolution: {integrity: sha512-7CGfPImcNc/anEKRouL4PCi/Kx6Y9aveO1x/sAyG9GNHm0uCpuZ9UOiaDJmczjK4LMCjAUtVW6ZHsW4+349NPQ==}
     peerDependencies:
@@ -1661,6 +1691,16 @@ packages:
 
   '@uppy/thumbnail-generator@4.0.2':
     resolution: {integrity: sha512-5viK5dxekUTmEaHwRwN3qTBU2bu2uDxMr91gwVoT2niL37erkNau0fFwFpZYuc5V0A9PacP27Jcs7R5a6giTCA==}
+    peerDependencies:
+      '@uppy/core': ^4.3.0
+
+  '@uppy/transloadit@4.1.4':
+    resolution: {integrity: sha512-V9Su3Kms42J+AB6DZgvykX4imVdFuHDBBJCXSkms/mTw6yE9YjEyNKFlzmoyaWlzkJpMSUTLAEwh2dTlvgYMwg==}
+    peerDependencies:
+      '@uppy/core': ^4.3.0
+
+  '@uppy/tus@4.1.5':
+    resolution: {integrity: sha512-vVfFuDkBbCSFpB5M2oh0yDkY8aR5UXCsNa0v71CtyBKZfCiSHzJ/jL5AVMKr9gaEpYitIDhTKS+YItwZpV6Dng==}
     peerDependencies:
       '@uppy/core': ^4.3.0
 
@@ -1896,6 +1936,9 @@ packages:
   buffer-equal-constant-time@1.0.1:
     resolution: {integrity: sha512-zRpUiDwd/xk6ADqPMATG8vc9VPrkck7T07OIx0gnjmJAnHnTVXNQG3vfvWNuiZIkwu9KrKdA1iJKfsfTVxE6NA==}
 
+  buffer-from@1.1.2:
+    resolution: {integrity: sha512-E+XQCRwSbaaiChtv6k6Dwgc+bx+Bs6vuKJHHl5kox/BaKbhiXzqQOwK4cO22yElGp2OCmjwVhT3HmxgyPGnJfQ==}
+
   buffer@5.7.1:
     resolution: {integrity: sha512-EHcyIPBQ4BSGlvjB16k5KgAJ27CIsHY/2JBmCRReo48y9rQ3MaUzWX3KVlBa4U7MyX02HdVj0K7C3WaB3ju7FQ==}
 
@@ -2030,6 +2073,9 @@ packages:
   colorspace@1.1.4:
     resolution: {integrity: sha512-BgvKJiuVu1igBUF2kEjRCZXol6wiiGbY5ipL/oVPwm0BL9sIpMIzM8IK7vwuxIIzOXMV3Ey5w+vxhm0rR/TN8w==}
 
+  combine-errors@3.0.3:
+    resolution: {integrity: sha512-C8ikRNRMygCwaTx+Ek3Yr+OuZzgZjduCOfSQBjbM8V3MfgcjSTeto/GXP6PAwKvJz/v15b7GHZvx5rOlczFw/Q==}
+
   combined-stream@1.0.8:
     resolution: {integrity: sha512-FQN4MRfuJeHf7cBbBMJFXhKSDq+2kAArBlmRBvcvFE5BB1HZKXtSFASDhdlz9zOYwxh8lDdnvmMOe/+5cdoEdg==}
     engines: {node: '>= 0.8'}
@@ -2037,6 +2083,10 @@ packages:
   commander@4.1.1:
     resolution: {integrity: sha512-NOKm8xhkzAjzFx8B2v5OAHT+u5pRQc2UCa2Vq9jYL/31o2wi9mxBA7LIFs3sV5VSC49z6pEhfbMULvShKj26WA==}
     engines: {node: '>= 6'}
+
+  component-emitter@2.0.0:
+    resolution: {integrity: sha512-4m5s3Me2xxlVKG9PkZpQqHQR7bgpnN7joDMJ4yvVkVXngjoITG76IaZmzmywSeRTeTpc6N6r3H3+KyUurV8OYw==}
+    engines: {node: '>=18'}
 
   concat-map@0.0.1:
     resolution: {integrity: sha512-/Srv4dswyQNBfohGpz9o6Yb3Gz3SrUDqBH5rTuhGR7ahtlbYKnVxw2bCFMRljaA7EXHaXZ8wsHdodFvbkhKmqg==}
@@ -2079,6 +2129,9 @@ packages:
 
   csv-parse@5.6.0:
     resolution: {integrity: sha512-l3nz3euub2QMg5ouu5U09Ew9Wf6/wQ8I++ch1loQ0ljmzhmfZYrH9fflS22i/PQEvsPvxCwxgz5q7UB8K1JO4Q==}
+
+  custom-error-instance@2.1.1:
+    resolution: {integrity: sha512-p6JFxJc3M4OTD2li2qaHkDCw9SfMw82Ldr6OC9Je1aXiGfhx2W8p3GaoeaGrPJTUN9NirTM/KTxHWMUdR1rsUg==}
 
   damerau-levenshtein@1.0.8:
     resolution: {integrity: sha512-sdQSFB7+llfUcQHUQO3+B8ERRj0Oa4w9POWMI/puGtuf7gFywGmkaLCElnudfTiKZV+NvHqL0ifzdrI8Ro7ESA==}
@@ -3046,6 +3099,24 @@ packages:
     resolution: {integrity: sha512-iPZK6eYjbxRu3uB4/WZ3EsEIMJFMqAoopl3R+zuq0UjcAm/MO6KCweDgPfP3elTztoKP3KtnVHxTn2NHBSDVUw==}
     engines: {node: '>=10'}
 
+  lodash._baseiteratee@4.7.0:
+    resolution: {integrity: sha512-nqB9M+wITz0BX/Q2xg6fQ8mLkyfF7MU7eE+MNBNjTHFKeKaZAPEzEg+E8LWxKWf1DQVflNEn9N49yAuqKh2mWQ==}
+
+  lodash._basetostring@4.12.0:
+    resolution: {integrity: sha512-SwcRIbyxnN6CFEEK4K1y+zuApvWdpQdBHM/swxP962s8HIxPO3alBH5t3m/dl+f4CMUug6sJb7Pww8d13/9WSw==}
+
+  lodash._baseuniq@4.6.0:
+    resolution: {integrity: sha512-Ja1YevpHZctlI5beLA7oc5KNDhGcPixFhcqSiORHNsp/1QTv7amAXzw+gu4YOvErqVlMVyIJGgtzeepCnnur0A==}
+
+  lodash._createset@4.0.3:
+    resolution: {integrity: sha512-GTkC6YMprrJZCYU3zcqZj+jkXkrXzq3IPBcF/fIPpNEAB4hZEtXU8zp/RwKOvZl43NUmwDbyRk3+ZTbeRdEBXA==}
+
+  lodash._root@3.0.1:
+    resolution: {integrity: sha512-O0pWuFSK6x4EXhM1dhZ8gchNtG7JMqBtrHdoUFUWXD7dJnNSUze1GuyQr5sOs0aCvgGeI3o/OJW8f4ca7FDxmQ==}
+
+  lodash._stringtopath@4.8.0:
+    resolution: {integrity: sha512-SXL66C731p0xPDC5LZg4wI5H+dJo/EO4KTqOMwLYCH3+FmmfAKJEZCm6ohGpI+T1xwsDsJCfL4OnhorllvlTPQ==}
+
   lodash.camelcase@4.3.0:
     resolution: {integrity: sha512-TwuEnCnxbc3rAvhf/LbG7tJUDzhqXyFnv3dtzLOPgCG/hODL7WFnsbwktkD7yUV0RrreP/l1PALq/YSg6VvjlA==}
 
@@ -3072,6 +3143,12 @@ packages:
 
   lodash.once@4.1.1:
     resolution: {integrity: sha512-Sb487aTOCr9drQVL8pIxOzVhafOjZN9UU54hiN8PU3uAiSV7lx1yYNpbNmex2PK6dSJoNTSJUUswT651yww3Mg==}
+
+  lodash.throttle@4.1.1:
+    resolution: {integrity: sha512-wIkUCfVKpVsWo3JSZlc+8MB5it+2AN5W8J7YVMST30UrvcQNZ1Okbj+rbVniijTWE6FGYy4XJq/rHkas8qJMLQ==}
+
+  lodash.uniqby@4.5.0:
+    resolution: {integrity: sha512-IRt7cfTtHy6f1aRVA5n7kT8rgN3N1nH6MOWLcHfpWG2SH19E3JksLK38MktLxZDhlAjCP9jpIXkOnRXlu6oByQ==}
 
   lodash@4.17.21:
     resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
@@ -3623,6 +3700,9 @@ packages:
   prop-types@15.8.1:
     resolution: {integrity: sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==}
 
+  proper-lockfile@4.1.2:
+    resolution: {integrity: sha512-TjNPblN4BwAWMXU8s9AEz4JmQxnD1NNL7bNOY/AKUzyamc379FWASUhc/K1pL2noVb+XmZKLL68cjzLsiOAMaA==}
+
   protobufjs@6.11.4:
     resolution: {integrity: sha512-5kQWPaJHi1WoCpjTGszzQ32PG2F4+wRY6BmAT4Vfw56Q2FZ4YZzK20xUYQH4YkfehY1e6QSICrJquM6xXZNcrw==}
     hasBin: true
@@ -3767,6 +3847,10 @@ packages:
   resolve@2.0.0-next.5:
     resolution: {integrity: sha512-U7WjGVG9sH8tvjW5SmGbQuui75FiyjAX72HX15DwBBwF9dNiQZRQAg9nnPhYy+TUnE0+VcrttuvNI8oSxZcocA==}
     hasBin: true
+
+  retry@0.12.0:
+    resolution: {integrity: sha512-9LkiTwjUh6rT555DtE9rTX+BKByPfrMzEAtnlEtdEwr3Nkffwiihqe2bWADg+OQRjt9gl6ICdmB/ZFDCGAtSow==}
+    engines: {node: '>= 4'}
 
   retry@0.13.1:
     resolution: {integrity: sha512-XQBQ3I8W1Cge0Seh+6gjj03LbmRFWuoszgK9ooCpwYIrhhoO80pfq4cUkU5DkknwfOfFteRwlZ56PYOGYyFWdg==}
@@ -4134,6 +4218,10 @@ packages:
   tunnel-agent@0.6.0:
     resolution: {integrity: sha512-McnNiV1l8RYeY8tBgEpuodCC1mLUdbSN+CYBL7kJsJNInOP8UjDDEwdk6Mw60vdLLrr5NHKZhMAOSrR2NZuQ+w==}
 
+  tus-js-client@4.2.3:
+    resolution: {integrity: sha512-UkQUCeDWKh5AwArcasIJWcL5EP66XPypKQtsdPu82wNnTea8eAUHdpDx3DcfZgDERAiCII895zMYkXri4M1wzw==}
+    engines: {node: '>=18'}
+
   type-check@0.4.0:
     resolution: {integrity: sha512-XleUoc9uwGXqjWwXaUTZAmzMcFZ5858QA2vvx1Ur5xIcixXIP+8LnFDgRplU30us6teqdlskFfu+ae4K79Ooew==}
     engines: {node: '>= 0.8.0'}
@@ -4387,6 +4475,24 @@ packages:
 
   zod@3.24.1:
     resolution: {integrity: sha512-muH7gBL9sI1nciMZV67X5fTKKBLtwpZ5VBp1vsOQzj1MhrBZ4wlVCm3gedKZWLp0Oyel8sIGfeiz54Su+OVT+A==}
+
+  zustand@5.0.2:
+    resolution: {integrity: sha512-8qNdnJVJlHlrKXi50LDqqUNmUbuBjoKLrYQBnoChIbVph7vni+sY+YpvdjXG9YLd/Bxr6scMcR+rm5H3aSqPaw==}
+    engines: {node: '>=12.20.0'}
+    peerDependencies:
+      '@types/react': '>=18.0.0'
+      immer: '>=9.0.6'
+      react: '>=18.0.0'
+      use-sync-external-store: '>=1.2.0'
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      immer:
+        optional: true
+      react:
+        optional: true
+      use-sync-external-store:
+        optional: true
 
 snapshots:
 
@@ -6390,6 +6496,15 @@ snapshots:
     transitivePeerDependencies:
       - '@supabase/supabase-js'
 
+  '@supabase-cache-helpers/storage-core@0.0.6': {}
+
+  '@supabase-cache-helpers/storage-react-query@1.2.4(@supabase/storage-js@2.7.1)(@tanstack/react-query@5.62.8(react@19.0.0))(react@19.0.0)':
+    dependencies:
+      '@supabase-cache-helpers/storage-core': 0.0.6
+      '@supabase/storage-js': 2.7.1
+      '@tanstack/react-query': 5.62.8(react@19.0.0)
+      react: 19.0.0
+
   '@supabase/auth-js@2.67.3':
     dependencies:
       '@supabase/node-fetch': 2.6.15
@@ -6651,6 +6766,14 @@ snapshots:
       '@uppy/utils': 6.0.6
       preact: 10.25.3
 
+  '@uppy/dropbox@4.1.2(@uppy/core@4.3.1)':
+    dependencies:
+      '@uppy/companion-client': 4.3.0(@uppy/core@4.3.1)
+      '@uppy/core': 4.3.1
+      '@uppy/provider-views': 4.2.0(@uppy/core@4.3.1)
+      '@uppy/utils': 6.0.6
+      preact: 10.25.3
+
   '@uppy/file-input@4.0.4(@uppy/core@4.3.1)':
     dependencies:
       '@uppy/core': 4.3.1
@@ -6706,6 +6829,22 @@ snapshots:
       '@uppy/core': 4.3.1
       '@uppy/utils': 6.0.6
       exifr: 7.1.3
+
+  '@uppy/transloadit@4.1.4(@uppy/core@4.3.1)':
+    dependencies:
+      '@uppy/companion-client': 4.3.0(@uppy/core@4.3.1)
+      '@uppy/core': 4.3.1
+      '@uppy/provider-views': 4.2.0(@uppy/core@4.3.1)
+      '@uppy/tus': 4.1.5(@uppy/core@4.3.1)
+      '@uppy/utils': 6.0.6
+      component-emitter: 2.0.0
+
+  '@uppy/tus@4.1.5(@uppy/core@4.3.1)':
+    dependencies:
+      '@uppy/companion-client': 4.3.0(@uppy/core@4.3.1)
+      '@uppy/core': 4.3.1
+      '@uppy/utils': 6.0.6
+      tus-js-client: 4.2.3
 
   '@uppy/url@4.1.2(@uppy/core@4.3.1)':
     dependencies:
@@ -6977,6 +7116,8 @@ snapshots:
 
   buffer-equal-constant-time@1.0.1: {}
 
+  buffer-from@1.1.2: {}
+
   buffer@5.7.1:
     dependencies:
       base64-js: 1.5.1
@@ -7143,11 +7284,18 @@ snapshots:
       color: 3.2.1
       text-hex: 1.0.0
 
+  combine-errors@3.0.3:
+    dependencies:
+      custom-error-instance: 2.1.1
+      lodash.uniqby: 4.5.0
+
   combined-stream@1.0.8:
     dependencies:
       delayed-stream: 1.0.0
 
   commander@4.1.1: {}
+
+  component-emitter@2.0.0: {}
 
   concat-map@0.0.1: {}
 
@@ -7193,6 +7341,8 @@ snapshots:
   csstype@3.1.3: {}
 
   csv-parse@5.6.0: {}
+
+  custom-error-instance@2.1.1: {}
 
   damerau-levenshtein@1.0.8: {}
 
@@ -8404,6 +8554,25 @@ snapshots:
     dependencies:
       p-locate: 5.0.0
 
+  lodash._baseiteratee@4.7.0:
+    dependencies:
+      lodash._stringtopath: 4.8.0
+
+  lodash._basetostring@4.12.0: {}
+
+  lodash._baseuniq@4.6.0:
+    dependencies:
+      lodash._createset: 4.0.3
+      lodash._root: 3.0.1
+
+  lodash._createset@4.0.3: {}
+
+  lodash._root@3.0.1: {}
+
+  lodash._stringtopath@4.8.0:
+    dependencies:
+      lodash._basetostring: 4.12.0
+
   lodash.camelcase@4.3.0: {}
 
   lodash.includes@4.3.0: {}
@@ -8421,6 +8590,13 @@ snapshots:
   lodash.merge@4.6.2: {}
 
   lodash.once@4.1.1: {}
+
+  lodash.throttle@4.1.1: {}
+
+  lodash.uniqby@4.5.0:
+    dependencies:
+      lodash._baseiteratee: 4.7.0
+      lodash._baseuniq: 4.6.0
 
   lodash@4.17.21: {}
 
@@ -8957,6 +9133,12 @@ snapshots:
       object-assign: 4.1.1
       react-is: 16.13.1
 
+  proper-lockfile@4.1.2:
+    dependencies:
+      graceful-fs: 4.2.11
+      retry: 0.12.0
+      signal-exit: 3.0.7
+
   protobufjs@6.11.4:
     dependencies:
       '@protobufjs/aspromise': 1.1.2
@@ -9141,6 +9323,8 @@ snapshots:
       path-parse: 1.0.7
       supports-preserve-symlinks-flag: 1.0.0
 
+  retry@0.12.0: {}
+
   retry@0.13.1: {}
 
   reusify@1.0.4: {}
@@ -9294,8 +9478,7 @@ snapshots:
       side-channel-map: 1.0.1
       side-channel-weakmap: 1.0.2
 
-  signal-exit@3.0.7:
-    optional: true
+  signal-exit@3.0.7: {}
 
   signal-exit@4.1.0: {}
 
@@ -9608,6 +9791,16 @@ snapshots:
     dependencies:
       safe-buffer: 5.2.1
 
+  tus-js-client@4.2.3:
+    dependencies:
+      buffer-from: 1.1.2
+      combine-errors: 3.0.3
+      is-stream: 2.0.1
+      js-base64: 3.7.2
+      lodash.throttle: 4.1.1
+      proper-lockfile: 4.1.2
+      url-parse: 1.5.10
+
   type-check@0.4.0:
     dependencies:
       prelude-ls: 1.2.1
@@ -9887,3 +10080,9 @@ snapshots:
   zod@3.22.5: {}
 
   zod@3.24.1: {}
+
+  zustand@5.0.2(@types/react@19.0.1)(react@19.0.0)(use-sync-external-store@1.4.0(react@19.0.0)):
+    optionalDependencies:
+      '@types/react': 19.0.1
+      react: 19.0.0
+      use-sync-external-store: 1.4.0(react@19.0.0)

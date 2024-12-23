@@ -32,6 +32,7 @@ An open-source tool helping legal aid organizations support tenants by analyzing
   - Give full access to aws bedrock
   - Make sure to create a new IAM user for this project and not use your root account
   - Get the access and secret keys
+- To allow uploading of files from URLs, Dropbox, etc, create a [free transloaditaccount](https://transloadit.com/) or [host a companion server yourself](https://uppy.io/docs/companion/#hosted)
 - Add the required credentials to the `.env.local.example` file and rename it to `.env.local`
 - Run `make init PROJECT_ID=<supabase project id>`. You can get <project-id> from your project's dashboard URL: https://supabase.com/dashboard/project/<project-id>. This will  prompt you to login to supabase and link the project to this repository.
 - Run `make dev` to start the development server and inngest server

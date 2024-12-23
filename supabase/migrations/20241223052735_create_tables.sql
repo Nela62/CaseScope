@@ -1,7 +1,45 @@
+-- Create the documents table
+CREATE TABLE IF NOT EXISTS documents(
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE ON UPDATE CASCADE,
+  name text NOT NULL,
+  url text NOT NULL,
+  created_at timestamp with time zone NOT NULL DEFAULT now(),
+  updated_at timestamp with time zone NOT NULL DEFAULT now()
+);
+
+-- Enable row level security on the documents table
+ALTER TABLE public.documents ENABLE ROW LEVEL SECURITY;
+
+-- Create a policy to enable all authenticated users to access the documents table
+CREATE POLICY "Enable ALL to authenticated users based on user id" ON "public"."documents" TO "authenticated"
+  USING (((
+    SELECT
+      "auth"."uid"() AS "uid") = "user_id"))
+      WITH CHECK (((
+        SELECT
+          "auth"."uid"() AS "uid") = "user_id"));
+
+-- Create a storage bucket for user-uploaded documents
+INSERT INTO storage.buckets(id, name, public)
+  VALUES ('documents', 'documents', FALSE);
+
+-- Create a policy to enable all authenticated users to access their own folder
+CREATE POLICY "Allow users to select their own folder" ON storage.buckets TO authenticated
+  USING (((storage.foldername(name))[0] = 'documents')
+    AND (storage.foldername(name))[1] =(
+      SELECT
+        auth.uid()::text))
+      WITH CHECK (((storage.foldername(name))[0] = 'documents')
+      AND (storage.foldername(name))[1] =(
+        SELECT
+          auth.uid()::text));
+
 -- Create the hearing_cases table
 CREATE TABLE IF NOT EXISTS hearing_cases(
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE ON UPDATE CASCADE,
+  document_id uuid NOT NULL REFERENCES documents(id) ON DELETE CASCADE ON UPDATE CASCADE,
   hearing_dates text[] NOT NULL,
   hearing_officer text NOT NULL,
   landlord_name text NOT NULL,
@@ -47,22 +85,4 @@ CREATE POLICY "Enable ALL to authenticated users based on user id" ON "public"."
       WITH CHECK (((
         SELECT
           "auth"."uid"() AS "uid") = "user_id"));
-
--- Create the storage bucket for user-uploaded documents
-INSERT INTO storage.buckets(id, name, public)
-  VALUES ('documents', 'documents', FALSE);
-
--- Create a policy to enable all authenticated users to access the documents bucket
-CREATE POLICY "Give authenticated users access to SEC Filings" ON storage.objects
-  FOR SELECT TO authenticated
-    USING (bucket_id = 'documents');
-
--- Create a policy to enable all authenticated users to access their own folder
-CREATE POLICY "Allow users to select their own folder" ON storage.buckets TO authenticated
-  USING ((storage.foldername(name))[1] =(
-    SELECT
-      auth.uid()::text))
-    WITH CHECK ((storage.foldername(name))[1] =(
-      SELECT
-        auth.uid()::text));
 
