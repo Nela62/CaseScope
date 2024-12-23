@@ -13,6 +13,7 @@
     "update-local-types": "supabase gen types typescript --local --schema=public,ai > src/lib/supabase/database.types.ts"
   },
   "dependencies": {
+    "@headlessui/react": "^2.2.0",
     "@llamaindex/community": "^0.0.77",
     "@radix-ui/react-label": "^2.1.1",
     "@radix-ui/react-scroll-area": "^1.2.2",

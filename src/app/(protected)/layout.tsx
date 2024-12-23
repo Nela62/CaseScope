@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { UserProvider } from "@/providers/user-provider";
+import { NavBar } from "@/components/navigation/nav-bar";
 
 export default async function ProtectedLayout({
   children,
@@ -19,9 +20,16 @@ export default async function ProtectedLayout({
         throw error;
       }
 
-      console.log(data.user);
-
-      return <UserProvider userId={data.user.id}>{children}</UserProvider>;
+      return (
+        <UserProvider userId={data.user.id}>
+          <div className="flex lg:flex-row flex-col w-full h-full bg-background">
+            <NavBar />
+            <main className="py-10 lg:pl-72">
+              <div className="px-4 sm:px-6 lg:px-8">{children}</div>
+            </main>
+          </div>
+        </UserProvider>
+      );
     } else {
       redirect("/login");
     }
