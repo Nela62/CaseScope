@@ -23,8 +23,14 @@ An open-source tool helping legal aid organizations support tenants by analyzing
 ## How to Set It Up
 - [Download docker](https://docs.docker.com/get-started/get-docker/) 
 - [Install supabase CLI](https://supabase.com/docs/guides/local-development/cli/getting-started)
-- [Create a supabase account and a new project](https://supabase.com/). Get the supabase anon key and url
-- [Create an aws account](https://aws.amazon.com/), request access to the Claude 3.5 Sonnet model, and get the access and secret keys (make sure it's not your root account. give full access to aws bedrock)
+- [Create a supabase account and a new project](https://supabase.com/)
+  - Get the supabase anon key and url
+  - Enable anonymous sign-ins in the supabase dashboard (Settings -> Authentication -> Enable anonymous sign-ins)
+- [Create an aws account](https://aws.amazon.com/)
+  - Request access to the Claude 3.5 Sonnet model
+  - Give full access to aws bedrock
+  - Make sure to create a new IAM user for this project and not use your root account
+  - Get the access and secret keys
 - Add the required credentials to the `.env.local.example` file and rename it to `.env.local`
 - Run `make init PROJECT_ID=<supabase project id>`. You can get <project-id> from your project's dashboard URL: https://supabase.com/dashboard/project/<project-id>. This will  prompt you to login to supabase and link the project to this repository.
 - Run `make dev` to start the development server and inngest server
