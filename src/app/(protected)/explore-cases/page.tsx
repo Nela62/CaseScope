@@ -5,7 +5,7 @@ import { Filters } from "./components/filters";
 import { CasesTable } from "./components/cases-table";
 import { IssuesTable } from "./components/issues-table";
 
-export default function ExplorePage() {
+export default function ExploreCasesPage() {
   return (
     <div className="flex h-full">
       <Filters />

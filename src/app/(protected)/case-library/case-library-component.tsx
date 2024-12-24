@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import { fetchAllDocuments } from "@/lib/queries";
 import { Skeleton } from "@/components/ui/skeleton";
 
-export const DataSourcesComponent = () => {
+export const CaseLibraryComponent = () => {
   const supabase = createClient();
   // const { data: documents, isLoading } = useQuery(fetchAllDocuments(supabase));
   const isLoading = true;

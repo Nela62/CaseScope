@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -9,6 +10,8 @@ import { navigationItems } from "./navigation-items";
 
 export const NavBar = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const pathname = usePathname();
+  // TODO: Add support for /my-cases/case-id
 
   return (
     <>
@@ -19,13 +22,13 @@ export const NavBar = () => {
       />
 
       {/* Static sidebar for desktop */}
-      <div className="hidden  lg:flex lg:w-72 lg:flex-col">
+      <div className="hidden  lg:flex lg:w-56 lg:flex-col">
         {/* Sidebar component, swap this element with another sidebar if you like */}
         <div className="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white px-6">
           <div className="flex h-16 shrink-0 items-center">
             <img
-              alt="Your Company"
-              src="https://tailwindui.com/plus/img/logos/mark.svg?color=blue&shade=600"
+              alt="Casescope"
+              src="/casescope-logo.png"
               className="h-8 w-auto"
             />
           </div>
@@ -38,19 +41,19 @@ export const NavBar = () => {
                       <Link
                         href={item.href}
                         className={cn(
-                          item.current
+                          item.href === pathname
                             ? "bg-gray-50 text-sky-800"
                             : "text-gray-700 hover:bg-gray-50 hover:text-sky-800",
-                          "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold"
+                          "group flex items-center gap-x-3 rounded-md p-2 text-sm/6 font-semibold"
                         )}
                       >
                         <item.icon
                           aria-hidden="true"
                           className={cn(
-                            item.current
+                            item.href === pathname
                               ? "text-sky-800"
                               : "text-gray-400 group-hover:text-sky-800",
-                            "size-6 shrink-0"
+                            "size-5 shrink-0"
                           )}
                         />
                         {item.name}

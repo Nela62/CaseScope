@@ -6,11 +6,11 @@ import {
 } from "@tanstack/react-query";
 import { prefetchQuery } from "@supabase-cache-helpers/postgrest-react-query";
 
-import { DataSourcesComponent } from "./data-sources-component";
+import { CaseLibraryComponent } from "./case-library-component";
 import { createClient } from "@/lib/supabase/server";
 import { fetchAllDocuments } from "@/lib/queries";
 
-export default async function DataSourcesPage() {
+export default async function CaseLibraryPage() {
   const supabase = await createClient();
   const queryClient = new QueryClient();
 
@@ -20,7 +20,7 @@ export default async function DataSourcesPage() {
     // Neat! Serialization is now as easy as passing props.
     // HydrationBoundary is a Client Component, so hydration will happen there.
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <DataSourcesComponent />
+      <CaseLibraryComponent />
     </HydrationBoundary>
   );
 }
