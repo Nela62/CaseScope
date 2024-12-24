@@ -1,22 +1,22 @@
 import { createStore } from "zustand/vanilla";
 
 export type AppState = {
-  userId: string;
+  selectedCaseId: string | null;
 };
 
 export type AppActions = {
-  setUserId: (userId: string) => void;
+  setSelectedCaseId: (caseId: string) => void;
 };
 
 export type AppStore = AppState & AppActions;
 
 export const defaultInitState: AppState = {
-  userId: "",
+  selectedCaseId: null,
 };
 
 export const createAppStore = (initState: AppState = defaultInitState) => {
   return createStore<AppStore>()((set) => ({
     ...initState,
-    setUserId: (userId: string) => set({ userId }),
+    setSelectedCaseId: (caseId: string) => set({ selectedCaseId: caseId }),
   }));
 };

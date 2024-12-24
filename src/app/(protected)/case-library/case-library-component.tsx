@@ -1,22 +1,32 @@
 "use client";
 
-import { useQuery } from "@supabase-cache-helpers/postgrest-react-query";
-import { FileUploader } from "./components/file-uploader";
-import { createClient } from "@/lib/supabase/client";
-import { fetchAllDocuments } from "@/lib/queries";
-import { Skeleton } from "@/components/ui/skeleton";
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable";
+import { CaseDetails } from "./components/case-details";
+import { CaseLibraryTable } from "./components/case-library-table";
+import { useAppStore } from "@/providers/app-store-provider";
 
 export const CaseLibraryComponent = () => {
-  const supabase = createClient();
-  // const { data: documents, isLoading } = useQuery(fetchAllDocuments(supabase));
-  const isLoading = true;
+  const { selectedCaseId } = useAppStore((state) => state);
 
-  return isLoading ? (
-    <Skeleton className="w-[100px] h-[20px] rounded-sm" />
-  ) : (
-    <div>
-      <h1 className="text-2xl font-bold">Data Sources</h1>
-      <FileUploader />
+  return (
+    <div className="h-full">
+      <ResizablePanelGroup direction="horizontal">
+        <ResizablePanel>
+          <CaseLibraryTable />
+        </ResizablePanel>
+        {selectedCaseId && (
+          <>
+            <ResizableHandle />
+            <ResizablePanel>
+              <CaseDetails />
+            </ResizablePanel>
+          </>
+        )}
+      </ResizablePanelGroup>
     </div>
   );
 };
