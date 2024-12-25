@@ -105,7 +105,7 @@ export const AddDocumentsDialog = () => {
           Add Documents
         </button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="max-w-none w-fit">
         <DialogHeader>
           <DialogTitle>Add Documents</DialogTitle>
         </DialogHeader>

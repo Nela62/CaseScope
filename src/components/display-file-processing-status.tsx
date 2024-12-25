@@ -50,6 +50,7 @@ export const DisplayFileProcessingStatus = () => {
       });
 
       if (removeEvent) {
+        // TODO: High: Invalidate the cache for documents
         removeFileProcessingEvents([eventId]);
       }
     },

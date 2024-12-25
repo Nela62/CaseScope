@@ -9,8 +9,6 @@ import { CaseDetails } from "./components/case-details";
 import { CaseLibraryTable } from "./components/case-library-table";
 import { useAppStore } from "@/providers/app-store-provider";
 import { AddDocumentsDialog } from "./components/add-documents-dialog";
-import { Skeleton } from "@/components/ui/skeleton";
-import { NoCases } from "./components/no-cases";
 import { useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useQuery } from "@supabase-cache-helpers/postgrest-react-query";
@@ -30,8 +28,6 @@ export const CaseLibraryComponent = () => {
     }
   }, [documents, setSelectedCaseId]);
 
-  // TODO: High: Once all runs are done, remove the event from the fileEvents
-
   return (
     <div className="h-full">
       <ResizablePanelGroup
@@ -39,7 +35,7 @@ export const CaseLibraryComponent = () => {
         className="space-x-4 md:space-x-6 lg:space-x-8"
       >
         <ResizablePanel defaultSize={60}>
-          <div className="h-full py-6">
+          <div className="h-full py-6 space-y-10">
             <div className="md:flex md:items-center md:justify-between">
               <div className="min-w-0 flex-1">
                 <h2 className="text-2xl/7 font-bold text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
@@ -51,14 +47,8 @@ export const CaseLibraryComponent = () => {
                 <AddDocumentsDialog />
               </div>
             </div>
-
-            {isLoading ? (
-              <Skeleton className="w-[100px] h-[20px] rounded-sm" />
-            ) : documents && documents.length > 0 ? (
-              <CaseLibraryTable />
-            ) : (
-              <NoCases />
-            )}
+            {/* TODO: Medium: Add scroll */}
+            <CaseLibraryTable />
           </div>
         </ResizablePanel>
         {selectedCaseId && (
