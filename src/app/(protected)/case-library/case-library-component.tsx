@@ -62,6 +62,7 @@ export const CaseLibraryComponent = () => {
         run.run_id,
         (updatedRun: Run) => {
           updateRun(eventId, updatedRun);
+          // TODO: if all runs are done, remove the event from the fileEvents
         },
         (error) => {
           console.error("Error polling run:", error);
@@ -97,8 +98,6 @@ export const CaseLibraryComponent = () => {
 
   useEffect(() => {
     const cleanups: (() => void)[] = [];
-
-    console.log(fileProcessingEvents);
 
     if (fileProcessingEvents.length > 0) {
       fileProcessingEvents.forEach(

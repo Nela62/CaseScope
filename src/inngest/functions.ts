@@ -64,6 +64,8 @@ const extractDataFn = referenceFunction<typeof extractData>({
   functionId: "extract-data",
 });
 
+// TODO: when the run fails, it should delete the document row from the db, the file from the storage, and any stored extracted data
+
 export const processNewDocument = inngest.createFunction(
   { id: "process-new-document" },
   { event: "api/document.added" },
@@ -118,6 +120,8 @@ export const processNewDocument = inngest.createFunction(
 
     const issues = issuesRes.data;
 
+    // TODO: add validation
+
     await step.run("store-in-db", async () => {
       const supabase = serviceClient();
       const { data: caseData, error: caseError } = await supabase
@@ -151,7 +155,20 @@ export const processNewDocument = inngest.createFunction(
 
       const { error: issuesError } = await supabase.from("issues").insert({
         case_id: caseId,
-        issues: issues,
+        user_id: userId,
+        document_id: fileId,
+        category: issues.category,
+        name: issues.name,
+        issue_details: issues.issueDetails,
+        duration: issues.duration,
+        tenant_evidence: issues.tenantEvidence,
+        landlord_counterarguments: issues.landlordCounterarguments,
+        landlord_evidence: issues.landlordEvidence,
+        decision: issues.decision,
+        relief_granted: issues.reliefGranted,
+        relief_description: issues.reliefDescription,
+        relief_amount: Number(issues.reliefAmount) ?? null,
+        relief_reason: issues.reliefReason,
       });
 
       if (issuesError) {

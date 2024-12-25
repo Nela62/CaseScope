@@ -95,22 +95,61 @@ export type Database = {
       issues: {
         Row: {
           case_id: string
+          category: string | null
           created_at: string
+          decision: string | null
+          document_id: string | null
+          duration: string | null
           id: string
+          issue_details: string | null
+          landlord_counterarguments: string[] | null
+          landlord_evidence: string[] | null
+          name: string | null
+          relief_amount: number | null
+          relief_description: string | null
+          relief_granted: boolean | null
+          relief_reason: string | null
+          tenant_evidence: string[] | null
           updated_at: string
           user_id: string
         }
         Insert: {
           case_id: string
+          category?: string | null
           created_at?: string
+          decision?: string | null
+          document_id?: string | null
+          duration?: string | null
           id?: string
+          issue_details?: string | null
+          landlord_counterarguments?: string[] | null
+          landlord_evidence?: string[] | null
+          name?: string | null
+          relief_amount?: number | null
+          relief_description?: string | null
+          relief_granted?: boolean | null
+          relief_reason?: string | null
+          tenant_evidence?: string[] | null
           updated_at?: string
           user_id: string
         }
         Update: {
           case_id?: string
+          category?: string | null
           created_at?: string
+          decision?: string | null
+          document_id?: string | null
+          duration?: string | null
           id?: string
+          issue_details?: string | null
+          landlord_counterarguments?: string[] | null
+          landlord_evidence?: string[] | null
+          name?: string | null
+          relief_amount?: number | null
+          relief_description?: string | null
+          relief_granted?: boolean | null
+          relief_reason?: string | null
+          tenant_evidence?: string[] | null
           updated_at?: string
           user_id?: string
         }
@@ -120,6 +159,13 @@ export type Database = {
             columns: ["case_id"]
             isOneToOne: false
             referencedRelation: "hearing_cases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "issues_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "documents"
             referencedColumns: ["id"]
           },
         ]
