@@ -59,6 +59,10 @@ export const FileUploader = ({
       uppy={uppy}
       proudlyDisplayPoweredByUppy={false}
       doneButtonHandler={() => onDone(files)}
+      // @ts-expect-error Status bar locale is different from what it expects here
+      locale={{
+        strings: { complete: "Uploaded", done: "Extract Data" },
+      }}
     />
   );
 };

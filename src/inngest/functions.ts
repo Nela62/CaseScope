@@ -1,70 +1,105 @@
-import { NonRetriableError, referenceFunction } from "inngest";
+import { NonRetriableError } from "inngest";
 import { inngest } from "./client";
 import { Bedrock } from "@llamaindex/community";
 import { LlamaParseReader } from "llamaindex";
 import { serviceClient } from "@/lib/supabase/service";
 import { getExtractor } from "@/lib/extractors";
-import { ExtractorType } from "@/types/extractor";
+import { Extractor, ExtractorType } from "@/types/extractor";
 
-export const extractData = inngest.createFunction(
-  { id: "extract-data" },
-  { event: "api/document.extracted" },
-  async ({ event, step }) => {
-    const { text, extractor } = await step.run("init", async () => {
-      const { text, extractor } = event.data;
+const extractData = async (text: string, extractor: Extractor) => {
+  const llm = new Bedrock({
+    model: "anthropic.claude-3-5-sonnet-20241022-v2:0",
+    region: "us-west-2",
+    maxTokens: 2048,
+    credentials: {
+      accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+    },
+  });
 
-      if (!text || !extractor) {
-        throw new NonRetriableError("Missing required data", {
-          cause: { text, extractor },
-        });
-      }
-      return { text, extractor };
-    });
+  const prompt = extractor.promptTemplate
+    .replace("{{TEXT}}", text)
+    .replace("{{JSON_SCHEMA}}", JSON.stringify(extractor.jsonSchema));
 
-    const llm = new Bedrock({
-      model: "anthropic.claude-3-5-sonnet-20241022-v2:0",
-      region: "us-west-2",
-      maxTokens: 2048,
-      credentials: {
-        accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
-      },
-    });
+  // TODO: High: add retry-after on rate limit error
+  const { text: response } = await llm.complete({ prompt });
 
-    const prompt = extractor.promptTemplate
-      .replace("{{TEXT}}", text)
-      .replace("{{JSON_SCHEMA}}", JSON.stringify(extractor.jsonSchema));
-
-    const { text: response } = await step.run("extract-data", async () => {
-      // TODO: add retry-after on rate limit error
-      return llm.complete({ prompt });
-    });
-
-    const extractedData = await step.run("parse-extracted-data", async () => {
-      try {
-        const extractedDataMatch = response.match(
-          /<extracted_data>([\s\S]*?)<\/extracted_data>/
-        );
-        return JSON.parse(extractedDataMatch?.[1] ?? "{}");
-      } catch (error) {
-        throw new NonRetriableError(
-          "Failed to parse extracted data: " + (error as Error).message,
-          {
-            cause: error,
-          }
-        );
-      }
-    });
+  try {
+    const extractedDataMatch = response.match(
+      /<extracted_data>([\s\S]*?)<\/extracted_data>/
+    );
+    const extractedData = JSON.parse(extractedDataMatch?.[1] ?? "{}");
 
     return { data: extractedData };
+  } catch (error) {
+    throw new NonRetriableError(
+      "Failed to parse extracted data: " + (error as Error).message,
+      {
+        cause: error,
+      }
+    );
   }
-);
+};
 
-const extractDataFn = referenceFunction<typeof extractData>({
-  functionId: "extract-data",
-});
+// export const extractData = inngest.createFunction(
+//   { id: "extract-data" },
+//   { event: "api/document.extracted" },
+//   async ({ event, step }) => {
+//     const { text, extractor } = await step.run("init", async () => {
+//       const { text, extractor } = event.data;
 
-// TODO: when the run fails, it should delete the document row from the db, the file from the storage, and any stored extracted data
+//       if (!text || !extractor) {
+//         throw new NonRetriableError("Missing required data", {
+//           cause: { text, extractor },
+//         });
+//       }
+//       return { text, extractor };
+//     });
+
+//     const llm = new Bedrock({
+//       model: "anthropic.claude-3-5-sonnet-20241022-v2:0",
+//       region: "us-west-2",
+//       maxTokens: 2048,
+//       credentials: {
+//         accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+//         secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+//       },
+//     });
+
+//     const prompt = extractor.promptTemplate
+//       .replace("{{TEXT}}", text)
+//       .replace("{{JSON_SCHEMA}}", JSON.stringify(extractor.jsonSchema));
+
+//     const { text: response } = await step.run("extract-data", async () => {
+//
+//       return llm.complete({ prompt });
+//     });
+
+//     const extractedData = await step.run("parse-extracted-data", async () => {
+//       try {
+//         const extractedDataMatch = response.match(
+//           /<extracted_data>([\s\S]*?)<\/extracted_data>/
+//         );
+//         return JSON.parse(extractedDataMatch?.[1] ?? "{}");
+//       } catch (error) {
+//         throw new NonRetriableError(
+//           "Failed to parse extracted data: " + (error as Error).message,
+//           {
+//             cause: error,
+//           }
+//         );
+//       }
+//     });
+
+//     return { data: extractedData };
+//   }
+// );
+
+// const extractDataFn = referenceFunction<typeof extractData>({
+//   functionId: "extract-data",
+// });
+
+// TODO: Low: when the run fails, it should delete the document row from the db, the file from the storage, and any stored extracted data
 
 export const processNewDocument = inngest.createFunction(
   { id: "process-new-document" },
@@ -106,21 +141,13 @@ export const processNewDocument = inngest.createFunction(
     const caseDetailsExtractor = getExtractor(ExtractorType.CASE_DETAILS);
     const issuesExtractor = getExtractor(ExtractorType.TENANT_ISSUES);
 
-    const caseDetailsRes = await step.invoke("extract-case-details", {
-      function: extractDataFn,
-      data: { text, extractor: caseDetailsExtractor },
-    });
+    const caseDetailsRes = await extractData(text, caseDetailsExtractor);
+    const issuesRes = await extractData(text, issuesExtractor);
 
     const caseDetails = caseDetailsRes.data;
-
-    const issuesRes = await step.invoke("extract-issues", {
-      function: extractDataFn,
-      data: { text, extractor: issuesExtractor },
-    });
-
     const issues = issuesRes.data;
 
-    // TODO: add validation
+    // TODO: Low: add JSON schema validation
 
     await step.run("store-in-db", async () => {
       const supabase = serviceClient();

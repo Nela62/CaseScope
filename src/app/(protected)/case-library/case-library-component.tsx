@@ -11,82 +11,27 @@ import { useAppStore } from "@/providers/app-store-provider";
 import { AddDocumentsButton } from "./components/add-documents-button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { NoCases } from "./components/no-cases";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useQuery } from "@supabase-cache-helpers/postgrest-react-query";
 import { fetchAllDocuments } from "@/lib/queries";
-import { type Run } from "@/types/inngest";
-import { createRunPoller, getRuns } from "@/lib/utils";
+import { DisplayFileProcessingStatus } from "@/components/display-file-processing-status";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
-type ProcessingRun = { id: string; status: string };
-type ProcessingFiles = {
-  [key: string]: { name: string; runs: ProcessingRun[] };
-};
-
-// TODO: Maybe use a hashmap instead of an array to speed it up
+// TODO: Medium: Maybe use a hashmap instead of an array to speed it up
+// TODO: High: Fetch all currently processing files on init
 export const CaseLibraryComponent = () => {
   const supabase = createClient();
   const { data: documents, isLoading } = useQuery(fetchAllDocuments(supabase));
   const { selectedCaseId, setSelectedCaseId, fileProcessingEvents } =
     useAppStore((state) => state);
-  const [fileEvents, setFileEvents] = useState<ProcessingFiles>({});
-
-  const updateRun = useCallback(
-    (eventId: string, run: Run) => {
-      setFileEvents((prevEvents) => ({
-        ...prevEvents,
-        [eventId]: {
-          name: prevEvents[eventId].name,
-          runs: prevEvents[eventId].runs.map((r) =>
-            r.id === run.run_id ? { id: r.id, status: run.status } : r
-          ),
-        },
-      }));
-    },
-    [setFileEvents]
-  );
-
-  const addRun = useCallback(
-    (eventId: string, run: Run) => {
-      setFileEvents((prevEvents) => ({
-        ...prevEvents,
-        [eventId]: {
-          name: prevEvents[eventId].name,
-          runs: [
-            ...prevEvents[eventId].runs,
-            { id: run.run_id, status: run.status },
-          ],
-        },
-      }));
-      const cleanup = createRunPoller(
-        run.run_id,
-        (updatedRun: Run) => {
-          updateRun(eventId, updatedRun);
-          // TODO: if all runs are done, remove the event from the fileEvents
-        },
-        (error) => {
-          console.error("Error polling run:", error);
-        }
-      );
-      return cleanup;
-    },
-    [setFileEvents, updateRun]
-  );
-
-  const addEvent = useCallback(
-    (event: { name: string; id: string }, eventRuns: Run[]) => {
-      if (!fileEvents[event.id]) {
-        setFileEvents((prevEvents) => ({
-          ...prevEvents,
-          [event.id]: { name: event.name, runs: [] },
-        }));
-      }
-      eventRuns.forEach((run) => {
-        addRun(event.id, run);
-      });
-    },
-    [fileEvents, setFileEvents, addRun]
-  );
 
   useEffect(() => {
     if (documents && documents.length > 0) {
@@ -94,34 +39,7 @@ export const CaseLibraryComponent = () => {
     }
   }, [documents, setSelectedCaseId]);
 
-  // TODO: Once all runs are done, remove the event from the fileEvents
-
-  useEffect(() => {
-    const cleanups: (() => void)[] = [];
-
-    if (fileProcessingEvents.length > 0) {
-      fileProcessingEvents.forEach(
-        async (event: { name: string; id: string }) => {
-          const eventRuns = await getRuns(event.id);
-
-          if (!fileEvents[event.id]) {
-            addEvent(event, eventRuns);
-          } else {
-            eventRuns.forEach((run: Run) => {
-              if (!fileEvents[event.id].runs.some((r) => r.id === run.run_id)) {
-                const cleanup = addRun(event.id, run);
-                cleanups.push(cleanup);
-              }
-            });
-          }
-        }
-      );
-    }
-
-    return () => {
-      cleanups.forEach((cleanup) => cleanup());
-    };
-  }, [fileProcessingEvents, addEvent, addRun, updateRun, fileEvents]);
+  // TODO: High: Once all runs are done, remove the event from the fileEvents
 
   return (
     <div className="h-full">
@@ -137,16 +55,30 @@ export const CaseLibraryComponent = () => {
                   Case Library
                 </h2>
               </div>
-              <div className="mt-4 flex md:mt-0 md:ml-4">
+              <div className="mt-4 flex gap-4 md:mt-0 md:ml-4">
+                <Dialog>
+                  <DialogTrigger>
+                    <div className="rounded-full bg-yellow-400 p-2 h-8 w-8 flex items-center justify-center text-muted-foreground">
+                      {/* {fileProcessingEvents.length} */}
+                      15
+                    </div>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      {/* TODO: Improve the title */}
+                      <DialogTitle>Files Being Processed</DialogTitle>
+                    </DialogHeader>
+                    <DisplayFileProcessingStatus />
+                  </DialogContent>
+                </Dialog>
                 <AddDocumentsButton />
               </div>
             </div>
-            {Object.values(fileEvents).map((file) => (
-              <div key={file.name} className="border">
-                <p>{file.name}</p>
-                <p>{file.runs.map((r) => r.status).join(", ")}</p>
-              </div>
-            ))}
+            <div className="flex items-center justify-between py-1 px-2 bg-orange-300 rounded-md">
+              <p>Processing files (5 left)</p>
+              <Button variant="outline">View</Button>
+            </div>
+
             {isLoading ? (
               <Skeleton className="w-[100px] h-[20px] rounded-sm" />
             ) : documents && documents.length > 0 ? (
