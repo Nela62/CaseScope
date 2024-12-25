@@ -1,5 +1,5 @@
 import { BriefcaseBusiness } from "lucide-react";
-import { AddDocumentsButton } from "./add-documents-button";
+import { AddDocumentsDialog } from "./add-documents-dialog";
 
 export const NoCases = () => {
   return (
@@ -10,7 +10,7 @@ export const NoCases = () => {
         Get started by adding past hearing cases to your library.
       </p>
       <div className="mt-6">
-        <AddDocumentsButton />
+        <AddDocumentsDialog />
       </div>
     </div>
   );

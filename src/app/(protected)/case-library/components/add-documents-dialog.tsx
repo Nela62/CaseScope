@@ -1,18 +1,22 @@
-"use client";
-
-import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { FileUploader } from "@/components/file-uploader";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { PlusIcon } from "lucide-react";
 import { useUpload } from "@supabase-cache-helpers/storage-react-query";
 import { createClient } from "@/lib/supabase/client";
 import { useUser } from "@/providers/user-provider";
 import { useUpsertMutation } from "@supabase-cache-helpers/postgrest-react-query";
 import { useAppStore } from "@/providers/app-store-provider";
 import { useRouter } from "next/navigation";
-import { FileUploader } from "@/components/file-uploader";
 import { useCallback, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 
-export default function AddDocumentsPage() {
+export const AddDocumentsDialog = () => {
   const { userId } = useUser();
   const { appendFileProcessingEvents } = useAppStore((state) => state);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -94,22 +98,19 @@ export default function AddDocumentsPage() {
   );
 
   return (
-    <div className="h-full flex flex-col py-9">
-      <Link
-        href="/case-library"
-        className="flex items-center gap-2 text-xs text-muted-foreground font-semibold cursor-pointer"
-      >
-        <ArrowLeft className="size-3" />
-        Back to Case Library
-      </Link>
-      <div className="min-w-0 flex items-center gap-2 mt-4">
-        <h2 className="text-2xl/7 font-bold text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
-          Upload Documents
-        </h2>
-      </div>
-      <div className="flex-1 flex items-center justify-center pb-20">
+    <Dialog>
+      <DialogTrigger asChild>
+        <button className="inline-flex items-center rounded-md bg-sky-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-sky-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600">
+          <PlusIcon aria-hidden="true" className="mr-1.5 -ml-0.5 size-5" />
+          Add Documents
+        </button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Add Documents</DialogTitle>
+        </DialogHeader>
         <FileUploader onDone={handleDone} />
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
-}
+};

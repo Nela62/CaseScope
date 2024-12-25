@@ -3,6 +3,14 @@ import { useAppStore } from "@/providers/app-store-provider";
 import { Run } from "@/types/inngest";
 import { useState } from "react";
 import { createRunPoller, getRuns } from "@/lib/utils";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "./ui/dialog";
+import { Button } from "./ui/button";
 
 type ProcessingRun = { id: string; status: string };
 type ProcessingFiles = {
@@ -64,7 +72,6 @@ export const DisplayFileProcessingStatus = () => {
         run.run_id,
         (updatedRun: Run) => {
           updateRun(eventId, updatedRun);
-          // TODO: if all runs are done, remove the event from the fileEvents
         },
         (error) => {
           console.error("Error polling run:", error);
@@ -118,13 +125,33 @@ export const DisplayFileProcessingStatus = () => {
   }, [fileProcessingEvents, addEvent, addRun, updateRun, fileEvents]);
 
   return (
-    <div>
-      {Object.values(fileEvents).map((file) => (
-        <div key={file.name} className="border">
-          <p>{file.name}</p>
-          <p>{file.runs.map((r) => r.status).join(", ")}</p>
-        </div>
-      ))}
-    </div>
+    fileProcessingEvents.length > 0 && (
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button variant="outline" className="text-sm text-foreground/70">
+            Files Processing
+            <div className="ml-1 relative h-6 w-6">
+              <div className="absolute inset-0 rounded-full border-2 border-sky-600/30 border-t-sky-600 animate-spin" />
+              <span className="absolute inset-0 inline-flex items-center justify-center text-xs text-sky-600 font-semibold">
+                {fileProcessingEvents.length}
+              </span>
+            </div>
+          </Button>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Files Processing</DialogTitle>
+          </DialogHeader>
+          <div>
+            {Object.values(fileEvents).map((file) => (
+              <div key={file.name} className="border">
+                <p>{file.name}</p>
+                <p>{file.runs.map((r) => r.status).join(", ")}</p>
+              </div>
+            ))}
+          </div>
+        </DialogContent>
+      </Dialog>
+    )
   );
 };

@@ -8,7 +8,7 @@ import {
 import { CaseDetails } from "./components/case-details";
 import { CaseLibraryTable } from "./components/case-library-table";
 import { useAppStore } from "@/providers/app-store-provider";
-import { AddDocumentsButton } from "./components/add-documents-button";
+import { AddDocumentsDialog } from "./components/add-documents-dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import { NoCases } from "./components/no-cases";
 import { useEffect } from "react";
@@ -16,22 +16,13 @@ import { createClient } from "@/lib/supabase/client";
 import { useQuery } from "@supabase-cache-helpers/postgrest-react-query";
 import { fetchAllDocuments } from "@/lib/queries";
 import { DisplayFileProcessingStatus } from "@/components/display-file-processing-status";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 
 // TODO: Medium: Maybe use a hashmap instead of an array to speed it up
 // TODO: High: Fetch all currently processing files on init
 export const CaseLibraryComponent = () => {
   const supabase = createClient();
   const { data: documents, isLoading } = useQuery(fetchAllDocuments(supabase));
-  const { selectedCaseId, setSelectedCaseId, fileProcessingEvents } =
-    useAppStore((state) => state);
+  const { selectedCaseId, setSelectedCaseId } = useAppStore((state) => state);
 
   useEffect(() => {
     if (documents && documents.length > 0) {
@@ -56,27 +47,9 @@ export const CaseLibraryComponent = () => {
                 </h2>
               </div>
               <div className="mt-4 flex gap-4 md:mt-0 md:ml-4">
-                <Dialog>
-                  <DialogTrigger>
-                    <div className="rounded-full bg-yellow-400 p-2 h-8 w-8 flex items-center justify-center text-muted-foreground">
-                      {/* {fileProcessingEvents.length} */}
-                      15
-                    </div>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                      {/* TODO: Improve the title */}
-                      <DialogTitle>Files Being Processed</DialogTitle>
-                    </DialogHeader>
-                    <DisplayFileProcessingStatus />
-                  </DialogContent>
-                </Dialog>
-                <AddDocumentsButton />
+                <DisplayFileProcessingStatus />
+                <AddDocumentsDialog />
               </div>
-            </div>
-            <div className="flex items-center justify-between py-1 px-2 bg-orange-300 rounded-md">
-              <p>Processing files (5 left)</p>
-              <Button variant="outline">View</Button>
             </div>
 
             {isLoading ? (
