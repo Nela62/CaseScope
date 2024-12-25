@@ -1,28 +1,10 @@
-import { NonRetriableError } from "inngest";
+import { NonRetriableError, referenceFunction } from "inngest";
 import { inngest } from "./client";
 import { Bedrock } from "@llamaindex/community";
-
-export const helloWorld = inngest.createFunction(
-  { id: "hello-world" },
-  { event: "test/hello.world" },
-  async ({ event, step }) => {
-    await step.sleep("wait-a-moment", "1s");
-    return { message: `Hello ${event.data.email}!` };
-  }
-);
-
-export const processNewDocument = inngest.createFunction(
-  { id: "process-new-document" },
-  { event: "api/document.added" },
-  async ({ event, step }) => {
-    await step.run("parse-document", async () => {
-      const { file } = event.data;
-    });
-    await step.run("extract-data", async () => {
-      return extractData({ event, step });
-    });
-  }
-);
+import { LlamaParseReader } from "llamaindex";
+import { serviceClient } from "@/lib/supabase/service";
+import { getExtractor } from "@/lib/extractors";
+import { ExtractorType } from "@/types/extractor";
 
 export const extractData = inngest.createFunction(
   { id: "extract-data" },
@@ -72,5 +54,91 @@ export const extractData = inngest.createFunction(
     });
 
     return { data: extractedData };
+  }
+);
+
+const extractDataFn = referenceFunction<typeof extractData>({
+  functionId: "extract-data",
+});
+
+export const processNewDocument = inngest.createFunction(
+  { id: "process-new-document" },
+  { event: "api/document.added" },
+  async ({ event, step }) => {
+    const { fileName, fileId, userId } = event.data;
+
+    const text = await step.run("parse-document", async () => {
+      // Download the file
+      const supabase = serviceClient();
+      const { data, error } = await supabase.storage
+        .from("documents")
+        .download(`${userId}/${fileName}`);
+
+      if (error) {
+        throw new NonRetriableError("Failed to download file", {
+          cause: error,
+        });
+      }
+
+      // Parse the document
+      // const { LlamaParseReader } = await import("llamaindex");
+
+      const arrayBuffer = await data.arrayBuffer();
+      const bytes = new Uint8Array(arrayBuffer);
+
+      const reader = new LlamaParseReader({ resultType: "markdown" });
+
+      const documents = await reader.loadDataAsContent(bytes, fileName);
+
+      const text = documents.reduce((acc, doc) => acc + doc.text, "");
+
+      return text;
+    });
+
+    const caseDetailsExtractor = getExtractor(ExtractorType.CASE_DETAILS);
+    const issuesExtractor = getExtractor(ExtractorType.TENANT_ISSUES);
+
+    const caseDetailsRes = await step.invoke("extract-case-details", {
+      function: extractDataFn,
+      data: { text, extractor: caseDetailsExtractor },
+    });
+
+    const caseDetails = caseDetailsRes.data;
+
+    await step.run("store-in-db", async () => {
+      const supabase = serviceClient();
+      const { data: caseData, error: caseError } = await supabase
+        .from("hearing_cases")
+        .insert({
+          user_id: userId,
+          document_id: fileId,
+          case_numbers: caseDetails.caseNumbers,
+          decision: caseDetails.decision,
+          hearing_dates: caseDetails.hearingDates,
+          hearing_officer: caseDetails.hearingOfficer,
+          landlord_name: caseDetails.landlordName,
+          length_of_tenancy: caseDetails.lengthOfTenancy,
+          property_address: caseDetails.propertyAddress,
+          reasoning: caseDetails.reasoning,
+          total_relief_granted: caseDetails.totalReliefGranted,
+        })
+        .select("id")
+        .single();
+
+      if (caseError || !caseData) {
+        throw new NonRetriableError("Failed to store case in db", {
+          cause: caseError,
+        });
+      }
+
+      const caseId = caseData.id;
+    });
+
+    // const issuesRes = await step.invoke("extract-issues", {
+    //   function: "extract-data",
+    //   data: { text, extractor: issuesExtractor },
+    // });
+
+    return;
   }
 );

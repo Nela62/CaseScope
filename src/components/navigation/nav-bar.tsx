@@ -7,6 +7,7 @@ import { Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { MobileNavBar } from "./mobile-nav-bar";
 import { navigationItems } from "./navigation-items";
+import Image from "next/image";
 
 export const NavBar = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -26,9 +27,12 @@ export const NavBar = () => {
         {/* Sidebar component, swap this element with another sidebar if you like */}
         <div className="flex grow flex-col overflow-y-auto border-r border-gray-200 bg-white px-6">
           <div className="flex h-16 shrink-0 items-center py-10">
-            <img
+            <Image
               alt="Casescope"
               src="/casescope-logo.png"
+              width="0"
+              height="0"
+              sizes="100vw"
               className="h-8 w-auto"
             />
           </div>
@@ -41,7 +45,7 @@ export const NavBar = () => {
                       <Link
                         href={item.href}
                         className={cn(
-                          item.href === pathname
+                          pathname.startsWith(item.href)
                             ? "bg-gray-50 text-sky-800"
                             : "text-gray-700 hover:bg-gray-50 hover:text-sky-800",
                           "group flex items-center gap-x-3 rounded-md p-2 text-sm/6 font-semibold"
@@ -50,7 +54,7 @@ export const NavBar = () => {
                         <item.icon
                           aria-hidden="true"
                           className={cn(
-                            item.href === pathname
+                            pathname.startsWith(item.href)
                               ? "text-sky-800"
                               : "text-gray-400 group-hover:text-sky-800",
                             "size-5 shrink-0"
@@ -68,9 +72,12 @@ export const NavBar = () => {
                   href="#"
                   className="flex items-center gap-x-4 px-6 py-3 text-sm/6 font-semibold text-gray-900 hover:bg-gray-50"
                 >
-                  <img
+                  <Image
                     alt=""
                     src="/demo-avatar.jpg"
+                    width="0"
+                    height="0"
+                    sizes="100vw"
                     className="size-8 rounded-full bg-gray-50"
                   />
                   <span className="sr-only">Your profile</span>
@@ -96,9 +103,12 @@ export const NavBar = () => {
         </div>
         <a href="#">
           <span className="sr-only">Your profile</span>
-          <img
+          <Image
             alt=""
             src="/demo-avatar.jpg"
+            width="0"
+            height="0"
+            sizes="100vw"
             className="size-8 rounded-full bg-gray-50"
           />
         </a>

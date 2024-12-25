@@ -15,7 +15,6 @@ export type Database = {
           id: string
           name: string
           updated_at: string
-          url: string
           user_id: string
         }
         Insert: {
@@ -23,7 +22,6 @@ export type Database = {
           id?: string
           name: string
           updated_at?: string
-          url: string
           user_id: string
         }
         Update: {
@@ -31,7 +29,6 @@ export type Database = {
           id?: string
           name?: string
           updated_at?: string
-          url?: string
           user_id?: string
         }
         Relationships: []
@@ -239,3 +236,4 @@ export type CompositeTypes<
   : PublicCompositeTypeNameOrOptions extends keyof PublicSchema["CompositeTypes"]
     ? PublicSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
     : never
+

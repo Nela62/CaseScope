@@ -1,3 +1,3 @@
 export const CaseDetails = () => {
-  return <div>Case Details</div>;
+  return <div className="py-6">Case Details</div>;
 };
