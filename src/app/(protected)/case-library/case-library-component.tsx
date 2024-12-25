@@ -31,16 +31,19 @@ export const CaseLibraryComponent = () => {
     useAppStore((state) => state);
   const [fileEvents, setFileEvents] = useState<ProcessingFiles>({});
 
-  const addEvent = useCallback(
-    (event: { name: string; id: string }) => {
-      if (!fileEvents[event.id]) {
-        setFileEvents((prevEvents) => ({
-          ...prevEvents,
-          [event.id]: { name: event.name, runs: [] },
-        }));
-      }
+  const updateRun = useCallback(
+    (eventId: string, run: Run) => {
+      setFileEvents((prevEvents) => ({
+        ...prevEvents,
+        [eventId]: {
+          name: prevEvents[eventId].name,
+          runs: prevEvents[eventId].runs.map((r) =>
+            r.id === run.run_id ? { id: r.id, status: run.status } : r
+          ),
+        },
+      }));
     },
-    [fileEvents, setFileEvents]
+    [setFileEvents]
   );
 
   const addRun = useCallback(
@@ -55,23 +58,33 @@ export const CaseLibraryComponent = () => {
           ],
         },
       }));
+      const cleanup = createRunPoller(
+        run.run_id,
+        (updatedRun: Run) => {
+          updateRun(eventId, updatedRun);
+        },
+        (error) => {
+          console.error("Error polling run:", error);
+        }
+      );
+      return cleanup;
     },
-    [setFileEvents]
+    [setFileEvents, updateRun]
   );
 
-  const updateRun = useCallback(
-    (eventId: string, run: Run) => {
-      setFileEvents((prevEvents) => ({
-        ...prevEvents,
-        [eventId]: {
-          name: prevEvents[eventId].name,
-          runs: prevEvents[eventId].runs.map((r) =>
-            r.id === run.run_id ? { id: r.id, status: run.status } : r
-          ),
-        },
-      }));
+  const addEvent = useCallback(
+    (event: { name: string; id: string }, eventRuns: Run[]) => {
+      if (!fileEvents[event.id]) {
+        setFileEvents((prevEvents) => ({
+          ...prevEvents,
+          [event.id]: { name: event.name, runs: [] },
+        }));
+      }
+      eventRuns.forEach((run) => {
+        addRun(event.id, run);
+      });
     },
-    [setFileEvents]
+    [fileEvents, setFileEvents, addRun]
   );
 
   useEffect(() => {
@@ -92,27 +105,16 @@ export const CaseLibraryComponent = () => {
         async (event: { name: string; id: string }) => {
           const eventRuns = await getRuns(event.id);
 
-          eventRuns.forEach((run: Run) => {
-            // Add the event to the processingFiles if it doesn't exist
-            if (!fileEvents[event.id]) {
-              addEvent(event);
-            }
-
-            // If the run is not already in the processingFiles, add it and create a poller
-            if (!fileEvents[event.id].runs.some((r) => r.id === run.run_id)) {
-              addRun(event.id, run);
-              const cleanup = createRunPoller(
-                run.run_id,
-                (updatedRun: Run) => {
-                  updateRun(event.id, updatedRun);
-                },
-                (error) => {
-                  console.error("Error polling run:", error);
-                }
-              );
-              cleanups.push(cleanup);
-            }
-          });
+          if (!fileEvents[event.id]) {
+            addEvent(event, eventRuns);
+          } else {
+            eventRuns.forEach((run: Run) => {
+              if (!fileEvents[event.id].runs.some((r) => r.id === run.run_id)) {
+                const cleanup = addRun(event.id, run);
+                cleanups.push(cleanup);
+              }
+            });
+          }
         }
       );
     }

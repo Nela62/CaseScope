@@ -46,10 +46,13 @@ export const extractData = inngest.createFunction(
           /<extracted_data>([\s\S]*?)<\/extracted_data>/
         );
         return JSON.parse(extractedDataMatch?.[1] ?? "{}");
-      } catch (err) {
-        throw new NonRetriableError("Failed to parse extracted data", {
-          cause: err,
-        });
+      } catch (error) {
+        throw new NonRetriableError(
+          "Failed to parse extracted data: " + (error as Error).message,
+          {
+            cause: error,
+          }
+        );
       }
     });
 
@@ -75,9 +78,12 @@ export const processNewDocument = inngest.createFunction(
         .download(`${userId}/${fileName}`);
 
       if (error) {
-        throw new NonRetriableError("Failed to download file", {
-          cause: error,
-        });
+        throw new NonRetriableError(
+          "Failed to download file: " + error.message,
+          {
+            cause: error,
+          }
+        );
       }
 
       // Parse the document
@@ -105,6 +111,13 @@ export const processNewDocument = inngest.createFunction(
 
     const caseDetails = caseDetailsRes.data;
 
+    const issuesRes = await step.invoke("extract-issues", {
+      function: extractDataFn,
+      data: { text, extractor: issuesExtractor },
+    });
+
+    const issues = issuesRes.data;
+
     await step.run("store-in-db", async () => {
       const supabase = serviceClient();
       const { data: caseData, error: caseError } = await supabase
@@ -126,18 +139,30 @@ export const processNewDocument = inngest.createFunction(
         .single();
 
       if (caseError || !caseData) {
-        throw new NonRetriableError("Failed to store case in db", {
-          cause: caseError,
-        });
+        throw new NonRetriableError(
+          "Failed to store case in db: " + caseError?.message,
+          {
+            cause: caseError,
+          }
+        );
       }
 
       const caseId = caseData.id;
-    });
 
-    // const issuesRes = await step.invoke("extract-issues", {
-    //   function: "extract-data",
-    //   data: { text, extractor: issuesExtractor },
-    // });
+      const { error: issuesError } = await supabase.from("issues").insert({
+        case_id: caseId,
+        issues: issues,
+      });
+
+      if (issuesError) {
+        throw new NonRetriableError(
+          "Failed to store issues in db: " + issuesError.message,
+          {
+            cause: issuesError,
+          }
+        );
+      }
+    });
 
     return;
   }
