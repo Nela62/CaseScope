@@ -19,7 +19,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAppStore } from "@/providers/app-store-provider";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 
 type Document = {
   id: string;
@@ -33,6 +33,12 @@ export const CaseLibraryTable = () => {
   const supabase = createClient();
   const { data: documents, isLoading } = useQuery(fetchAllDocuments(supabase));
   const { setSelectedCaseId } = useAppStore((state) => state);
+
+  useEffect(() => {
+    if (documents && documents.length > 0) {
+      setSelectedCaseId(documents[0].id);
+    }
+  }, [documents, setSelectedCaseId]);
 
   const { mutateAsync: deleteDocument } = useDeleteMutation(
     supabase.from("documents"),

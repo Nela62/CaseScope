@@ -23,7 +23,7 @@ import { useState } from "react";
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
-  onRowClick: (row: TData) => void;
+  onRowClick?: (row: TData) => void;
 }
 
 export function DataTable<TData, TValue>({
@@ -31,7 +31,9 @@ export function DataTable<TData, TValue>({
   data,
   onRowClick,
 }: DataTableProps<TData, TValue>) {
-  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>(
+    data.length && onRowClick ? { 0: true } : {}
+  );
 
   const table = useReactTable({
     data,
@@ -78,7 +80,7 @@ export function DataTable<TData, TValue>({
                   className="hover:bg-muted cursor-pointer"
                   onClick={() => {
                     row.toggleSelected();
-                    onRowClick(row.original);
+                    onRowClick?.(row.original);
                   }}
                 >
                   {row.getVisibleCells().map((cell) => (

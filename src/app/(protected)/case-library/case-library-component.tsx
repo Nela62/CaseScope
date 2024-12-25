@@ -5,28 +5,16 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
-import { CaseDetails } from "./components/case-details";
 import { CaseLibraryTable } from "./components/case-library-table";
 import { useAppStore } from "@/providers/app-store-provider";
 import { AddDocumentsDialog } from "./components/add-documents-dialog";
-import { useEffect } from "react";
-import { createClient } from "@/lib/supabase/client";
-import { useQuery } from "@supabase-cache-helpers/postgrest-react-query";
-import { fetchAllDocuments } from "@/lib/queries";
 import { DisplayFileProcessingStatus } from "@/components/display-file-processing-status";
+import { CaseDetailsSidebar } from "./components/case-details-sidebar/sidebar";
 
 // TODO: Medium: Maybe use a hashmap instead of an array to speed it up
 // TODO: High: Fetch all currently processing files on init
 export const CaseLibraryComponent = () => {
-  const supabase = createClient();
-  const { data: documents, isLoading } = useQuery(fetchAllDocuments(supabase));
-  const { selectedCaseId, setSelectedCaseId } = useAppStore((state) => state);
-
-  useEffect(() => {
-    if (documents && documents.length > 0) {
-      setSelectedCaseId(documents[0].id);
-    }
-  }, [documents, setSelectedCaseId]);
+  const { selectedCaseId } = useAppStore((state) => state);
 
   return (
     <div className="h-full">
@@ -55,7 +43,7 @@ export const CaseLibraryComponent = () => {
           <>
             <ResizableHandle />
             <ResizablePanel defaultSize={40}>
-              <CaseDetails />
+              <CaseDetailsSidebar />
             </ResizablePanel>
           </>
         )}
