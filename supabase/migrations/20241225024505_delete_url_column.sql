@@ -43,3 +43,9 @@ ALTER TABLE issues
 ALTER TABLE issues
   ADD COLUMN relief_reason text;
 
+ALTER TABLE hearing_cases
+  ADD CONSTRAINT hearing_cases_document_id_key UNIQUE (document_id);
+
+ALTER TABLE issues
+  ADD CONSTRAINT issues_document_id_key UNIQUE (document_id);
+

@@ -14,7 +14,7 @@ const TabsList = React.forwardRef<
   <TabsPrimitive.List
     ref={ref}
     className={cn(
-      "isolate flex divide-x rounded-lg shadow-sm border",
+      "isolate flex divide-x rounded-lg shadow-sm border mb-4",
       className
     )}
     {...props}

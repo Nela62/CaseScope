@@ -30,8 +30,10 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col h-screen`}
       >
         <Providers>
-          <Banner />
-          <div className="flex-1">{children}</div>
+          <div className="flex-none">
+            <Banner />
+          </div>
+          <div className="flex-1 min-h-0">{children}</div>
         </Providers>
       </body>
     </html>
