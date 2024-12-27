@@ -1,3 +1,5 @@
+"use client";
+
 import {
   useDeleteMutation,
   useQuery,
@@ -20,6 +22,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useAppStore } from "@/providers/app-store-provider";
 import { useEffect, useMemo } from "react";
+import { useRemoveFiles } from "@supabase-cache-helpers/storage-react-query";
+import { useUser } from "@/providers/user-provider";
 
 type Document = {
   id: string;
@@ -27,12 +31,14 @@ type Document = {
   created_at: string;
 };
 
-// TODO: High: Add delete button
 // TODO: Low: Add sorting
+// TODO: High: Doesn't remove the sidebar even after the last case is deleted
+// TODO: High: Adds a document to the list before it's fully processed
 export const CaseLibraryTable = () => {
   const supabase = createClient();
   const { data: documents, isLoading } = useQuery(fetchAllDocuments(supabase));
   const { setSelectedCaseId } = useAppStore((state) => state);
+  const { userId } = useUser();
 
   useEffect(() => {
     if (documents && documents.length > 0) {
@@ -43,6 +49,9 @@ export const CaseLibraryTable = () => {
   const { mutateAsync: deleteDocument } = useDeleteMutation(
     supabase.from("documents"),
     ["id"]
+  );
+  const { mutateAsync: deleteFile } = useRemoveFiles(
+    supabase.storage.from("documents")
   );
 
   const columns: ColumnDef<Document>[] = useMemo(
@@ -57,9 +66,7 @@ export const CaseLibraryTable = () => {
         cell: ({ row }: { row: Row<Document> }) => {
           const document = row.original;
           return (
-            <div className="text-center">
-              {format(document.created_at, "MM/dd/yyyy")}
-            </div>
+            <div className="">{format(document.created_at, "MM/dd/yyyy")}</div>
           );
         },
       },
@@ -84,9 +91,14 @@ export const CaseLibraryTable = () => {
                   Actions
                 </DropdownMenuLabel>
                 <DropdownMenuItem
-                  // TODO: High: Delete from storage
                   // TODO: Low: Add confirmation toast
-                  onClick={() => deleteDocument({ id: document.id })}
+                  onClick={async () => {
+                    await deleteDocument({ id: document.id });
+                    await deleteFile([`${userId}/${document.name}`]);
+                    setSelectedCaseId(
+                      documents && documents.length ? documents[0].id : null
+                    );
+                  }}
                 >
                   Delete
                 </DropdownMenuItem>
@@ -96,11 +108,8 @@ export const CaseLibraryTable = () => {
         },
       },
     ],
-    [deleteDocument]
+    [deleteDocument, deleteFile, setSelectedCaseId, documents, userId]
   );
-
-  // TODO: Low: Corners of the table overflow
-  // TODO: Low: Improve the table's ui
 
   return documents && !isLoading ? (
     documents.length > 0 ? (

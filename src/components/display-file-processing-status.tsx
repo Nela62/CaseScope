@@ -11,25 +11,29 @@ import {
   DialogTrigger,
 } from "./ui/dialog";
 import { Button } from "./ui/button";
+import { useQueryClient } from "@tanstack/react-query";
 
 type ProcessingRun = { id: string; status: string };
 type ProcessingFiles = {
   [key: string]: { name: string; runs: ProcessingRun[] };
 };
+// TODO: Medium: This takes a moment to show up
 
 const DisplayTaskStatus = ({ taskId }: { taskId: string }) => {
   return <div>TaskStatus for {taskId}</div>;
 };
 
+// TODO: High: Improve the UI
 export const DisplayFileProcessingStatus = () => {
-  const { fileProcessingEvents, removeFileProcessingEvents } = useAppStore(
+  const { fileProcessingEvents, completeFileProcessingEvents } = useAppStore(
     (state) => state
   );
   const [fileEvents, setFileEvents] = useState<ProcessingFiles>({});
+  const queryClient = useQueryClient();
 
   const updateRun = useCallback(
     (eventId: string, run: Run) => {
-      let removeEvent = false;
+      let completeEvent = false;
 
       setFileEvents((prevEvents) => {
         const newRuns = prevEvents[eventId].runs.map((r) =>
@@ -37,7 +41,7 @@ export const DisplayFileProcessingStatus = () => {
         );
 
         if (newRuns.every((r) => r.status === "completed")) {
-          removeEvent = true;
+          completeEvent = true;
         }
 
         return {
@@ -49,12 +53,15 @@ export const DisplayFileProcessingStatus = () => {
         };
       });
 
-      if (removeEvent) {
-        // TODO: High: Invalidate the cache for documents
-        removeFileProcessingEvents([eventId]);
+      if (completeEvent) {
+        // TODO: Test
+        queryClient.invalidateQueries({
+          queryKey: ["documents"],
+        });
+        completeFileProcessingEvents([eventId]);
       }
     },
-    [setFileEvents, removeFileProcessingEvents]
+    [setFileEvents, completeFileProcessingEvents, queryClient]
   );
 
   const addRun = useCallback(

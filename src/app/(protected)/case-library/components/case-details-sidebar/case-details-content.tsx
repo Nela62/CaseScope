@@ -14,22 +14,6 @@ export const CaseDetailsContent = () => {
     { enabled: !!selectedCaseId }
   );
 
-  const people = [
-    {
-      name: "Lindsay Walton",
-      title: "Front-end Developer",
-      email: "lindsay.walton@example.com",
-      role: "Member",
-    },
-    {
-      name: "Lindsay Walton",
-      title: "Front-end Developer",
-      email: "lindsay.walt@example.com",
-      role: "Member",
-    },
-    // More people...
-  ];
-
   const displayValue = (value: unknown) => {
     if (typeof value === "object") {
       return Object.entries(value as object).map(([addrKey, addrValue]) => (

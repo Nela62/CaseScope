@@ -20,10 +20,11 @@ export const AddDocumentsDialog = () => {
   const { userId } = useUser();
   const { appendFileProcessingEvents } = useAppStore((state) => state);
   const [isProcessing, setIsProcessing] = useState(false);
-
+  const [open, setOpen] = useState(false);
   const supabase = createClient();
   const router = useRouter();
 
+  // TODO: High: Change to upload in the backend and then revalidate cache after it's done
   const { mutateAsync: upload } = useUpload(
     supabase.storage.from("documents"),
     { buildFileName: ({ fileName }) => `${userId}/${fileName}` }
@@ -43,38 +44,19 @@ export const AddDocumentsDialog = () => {
 
       setIsProcessing(true);
 
-      const res = await upload({
-        files: files.map((file) =>
-          file instanceof File ? file : new File([file], `${uuidv4()}.pdf`)
-        ),
-      });
-
-      const filePaths = res.map(({ data, error }) => {
-        // TODO: move these to backend or background job. otherwise they're slowing down the page
-        if (error) {
-          console.error(error);
-          throw new Error("Failed to upload file");
-        }
-        return data.fullPath;
-      });
-
-      const documents = await insertDocuments(
-        filePaths.map((path) => ({
-          name: path.split("/").pop()!,
-          user_id: userId,
-        }))
+      const processedFiles = files.map((file) =>
+        file instanceof File ? file : new File([file], `${uuidv4()}.pdf`)
       );
 
-      if (!documents) {
-        console.error("Failed to insert documents");
-        throw new Error("Failed to insert documents");
+      const formData = new FormData();
+      formData.append("userId", userId);
+      for (let i = 0; i < processedFiles.length; i++) {
+        formData.append("files[]", processedFiles[i], processedFiles[i].name);
       }
-
-      console.log(documents);
 
       const response = await fetch("/api/documents/process", {
         method: "POST",
-        body: JSON.stringify({ files: documents, userId }),
+        body: formData,
       });
 
       if (!response.ok) {
@@ -85,20 +67,13 @@ export const AddDocumentsDialog = () => {
       const { data } = await response.json();
       console.log(data);
       appendFileProcessingEvents(data);
-      router.push("/case-library");
+      setOpen(false);
     },
-    [
-      isProcessing,
-      appendFileProcessingEvents,
-      router,
-      insertDocuments,
-      upload,
-      userId,
-    ]
+    [isProcessing, appendFileProcessingEvents, userId]
   );
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <button className="inline-flex items-center rounded-md bg-sky-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-sky-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600">
           <PlusIcon aria-hidden="true" className="mr-1.5 -ml-0.5 size-5" />

@@ -7,6 +7,7 @@ import { getExtractor } from "@/lib/extractors";
 import { Extractor, ExtractorType } from "@/types/extractor";
 
 // TODO: High: Store the parsed text in the db
+// TODO: Medium: Use Athina AI for observability
 
 const extractData = async (text: string, extractor: Extractor) => {
   const llm = new Bedrock({
@@ -32,7 +33,7 @@ const extractData = async (text: string, extractor: Extractor) => {
     );
     const extractedData = JSON.parse(extractedDataMatch?.[1] ?? "{}");
 
-    return { data: extractedData };
+    return extractedData;
   } catch (error) {
     throw new NonRetriableError(
       "Failed to parse extracted data: " + (error as Error).message,
@@ -102,6 +103,7 @@ const extractData = async (text: string, extractor: Extractor) => {
 // });
 
 // TODO: Low: when the run fails, it should delete the document row from the db, the file from the storage, and any stored extracted data
+// BUG: Cannot read properties of undefined (reading 'caseNumbers') - store-in-db
 
 export const processNewDocument = inngest.createFunction(
   { id: "process-new-document" },
@@ -140,71 +142,106 @@ export const processNewDocument = inngest.createFunction(
       return text;
     });
 
-    const caseDetailsExtractor = getExtractor(ExtractorType.CASE_DETAILS);
-    const issuesExtractor = getExtractor(ExtractorType.TENANT_ISSUES);
-
-    const caseDetailsRes = await extractData(text, caseDetailsExtractor);
-    const issuesRes = await extractData(text, issuesExtractor);
-
-    const caseDetails = caseDetailsRes.data;
-    const issues = issuesRes.data;
+    const supabase = serviceClient();
 
     // TODO: Low: add JSON schema validation
+    // TODO: Medium: add retry-after on rate limit error
+    // TODO: Low: Add a list of already existing landlords
 
-    await step.run("store-in-db", async () => {
-      const supabase = serviceClient();
-      const { data: caseData, error: caseError } = await supabase
-        .from("hearing_cases")
-        .insert({
-          user_id: userId,
-          document_id: fileId,
-          case_numbers: caseDetails.caseNumbers,
-          decision: caseDetails.decision,
-          hearing_dates: caseDetails.hearingDates,
-          hearing_officer: caseDetails.hearingOfficer,
-          landlord_name: caseDetails.landlordName,
-          length_of_tenancy: caseDetails.lengthOfTenancy,
-          property_address: caseDetails.propertyAddress,
-          reasoning: caseDetails.reasoning,
-          total_relief_granted: caseDetails.totalReliefGranted,
-        })
-        .select("id")
-        .single();
+    const caseId = await step.run("extract-case-details", async () => {
+      const caseDetailsExtractor = getExtractor(ExtractorType.CASE_DETAILS);
+      const caseDetails = await extractData(text, caseDetailsExtractor);
 
-      if (caseError || !caseData) {
+      console.log("caseDetails", caseDetails);
+
+      try {
+        const { data: caseData, error: caseError } = await supabase
+          .from("hearing_cases")
+          .insert({
+            user_id: userId,
+            document_id: fileId,
+            case_numbers: caseDetails.caseNumbers,
+            decision: caseDetails.decision,
+            hearing_dates: caseDetails.hearingDates,
+            hearing_officer: caseDetails.hearingOfficer,
+            landlord_name: caseDetails.landlordName,
+            length_of_tenancy: caseDetails.lengthOfTenancy,
+            property_address: caseDetails.propertyAddress,
+            reasoning: caseDetails.reasoning,
+            total_relief_granted: caseDetails.totalReliefGranted,
+          })
+          .select("id")
+          .single();
+
+        if (caseError || !caseData) {
+          throw new NonRetriableError(
+            "Failed to store case in db: " + caseError?.message,
+            {
+              cause: caseError,
+            }
+          );
+        }
+
+        const caseId = caseData.id;
+
+        return caseId;
+      } catch (err) {
         throw new NonRetriableError(
-          "Failed to store case in db: " + caseError?.message,
+          "Failed to store case in db: " +
+            (err as Error).message +
+            ". Extracted data: " +
+            JSON.stringify(caseDetails),
           {
-            cause: caseError,
+            cause: err,
           }
         );
       }
+    });
 
-      const caseId = caseData.id;
+    await step.run("extract-tenant-issues", async () => {
+      const issuesExtractor = getExtractor(ExtractorType.TENANT_ISSUES);
+      const issuesRes = await extractData(text, issuesExtractor);
+      const issues = issuesRes.issues;
 
-      const { error: issuesError } = await supabase.from("issues").insert({
-        case_id: caseId,
-        user_id: userId,
-        document_id: fileId,
-        category: issues.category,
-        name: issues.name,
-        issue_details: issues.issueDetails,
-        duration: issues.duration,
-        tenant_evidence: issues.tenantEvidence,
-        landlord_counterarguments: issues.landlordCounterarguments,
-        landlord_evidence: issues.landlordEvidence,
-        decision: issues.decision,
-        relief_granted: issues.reliefGranted,
-        relief_description: issues.reliefDescription,
-        relief_amount: Number(issues.reliefAmount) ?? null,
-        relief_reason: issues.reliefReason,
-      });
-
-      if (issuesError) {
-        throw new NonRetriableError(
-          "Failed to store issues in db: " + issuesError.message,
+      try {
+        // TODO: High: Update the database to new schema
+        const { error: issuesError } = await supabase.from("issues").insert([
           {
-            cause: issuesError,
+            case_id: caseId,
+            user_id: userId,
+            document_id: fileId,
+            category: issues.category,
+            subcategory: issues.subcategory,
+            issue_type: issues.issueType,
+            issue_details: issues.issueDetails,
+            duration: issues.duration,
+            tenant_evidence: issues.tenantEvidence,
+            landlord_counterarguments: issues.landlordCounterarguments,
+            landlord_evidence: issues.landlordEvidence,
+            decision: issues.decision,
+            relief_granted: issues.reliefGranted,
+            relief_description: issues.reliefDescription,
+            relief_amount: Number(issues.reliefAmount) ?? null,
+            relief_reason: issues.reliefReason,
+          },
+        ]);
+
+        if (issuesError) {
+          throw new NonRetriableError(
+            "Failed to store issues in db: " + issuesError.message,
+            {
+              cause: issuesError,
+            }
+          );
+        }
+      } catch (err) {
+        throw new NonRetriableError(
+          "Failed to store issues in db: " +
+            (err as Error).message +
+            ". Extracted data: " +
+            JSON.stringify(issuesRes),
+          {
+            cause: err,
           }
         );
       }

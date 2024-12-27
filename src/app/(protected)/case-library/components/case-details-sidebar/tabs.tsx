@@ -1,6 +1,7 @@
 import { TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ChevronDown } from "lucide-react";
 
+// TODO: Low: Standardize the color of borders
 export const CaseDetailsSidebarTabs = ({ tabs }: { tabs: string[] }) => {
   return (
     <div className="">
@@ -23,7 +24,7 @@ export const CaseDetailsSidebarTabs = ({ tabs }: { tabs: string[] }) => {
         <div className="hidden sm:block">
           <TabsList defaultValue={tabs[0]}>
             {tabs.map((tab) => (
-              <TabsTrigger key={tab} value={tab}>
+              <TabsTrigger key={tab} value={tab} className="bg-gray-50">
                 {tab}
               </TabsTrigger>
             ))}

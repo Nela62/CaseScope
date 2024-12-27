@@ -11,7 +11,10 @@ ALTER TABLE issues
   ADD COLUMN category text;
 
 ALTER TABLE issues
-  ADD COLUMN name text;
+  ADD COLUMN subcategory text;
+
+ALTER TABLE issues
+  ADD COLUMN issue_type text;
 
 ALTER TABLE issues
   ADD COLUMN issue_details text;
