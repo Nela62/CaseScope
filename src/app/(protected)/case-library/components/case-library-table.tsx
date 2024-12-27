@@ -80,7 +80,9 @@ export const CaseLibraryTable = () => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                <DropdownMenuLabel className="sr-only">
+                  Actions
+                </DropdownMenuLabel>
                 <DropdownMenuItem
                   // TODO: High: Delete from storage
                   // TODO: Low: Add confirmation toast

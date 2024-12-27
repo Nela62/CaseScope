@@ -6,6 +6,8 @@ import { serviceClient } from "@/lib/supabase/service";
 import { getExtractor } from "@/lib/extractors";
 import { Extractor, ExtractorType } from "@/types/extractor";
 
+// TODO: High: Store the parsed text in the db
+
 const extractData = async (text: string, extractor: Extractor) => {
   const llm = new Bedrock({
     model: "anthropic.claude-3-5-sonnet-20241022-v2:0",

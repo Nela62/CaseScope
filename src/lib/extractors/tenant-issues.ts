@@ -52,12 +52,12 @@ export const jsonSchema = {
       category: {
         type: "string",
         enum: [
-          "illegal rent increase",
-          "habitability",
-          "maintenance",
+          "habitability problems",
+          "maintenance-related issues",
+          "service reductions",
           "code violations",
-          "loss of or reduced housing services",
-          "other",
+          "additional financial burdens",
+          "other common issues",
         ],
         description: "Category of the tenant issue.",
       },
