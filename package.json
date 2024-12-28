@@ -13,6 +13,7 @@
     "update-local-types": "supabase gen types typescript --local --schema=public,ai > src/lib/supabase/database.types.ts"
   },
   "dependencies": {
+    "@aws-sdk/client-bedrock-runtime": "^3.716.0",
     "@headlessui/react": "^2.2.0",
     "@llamaindex/community": "^0.0.77",
     "@radix-ui/react-dialog": "^1.1.4",

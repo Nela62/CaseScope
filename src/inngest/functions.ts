@@ -1,13 +1,15 @@
-import { NonRetriableError } from "inngest";
+import { NonRetriableError, RetryAfterError } from "inngest";
 import { inngest } from "./client";
 import { Bedrock } from "@llamaindex/community";
 import { LlamaParseReader } from "llamaindex";
 import { serviceClient } from "@/lib/supabase/service";
 import { getExtractor } from "@/lib/extractors";
 import { Extractor, ExtractorType } from "@/types/extractor";
+import { ThrottlingException } from "@aws-sdk/client-bedrock-runtime";
 
-// TODO: High: Store the parsed text in the db
 // TODO: Medium: Use Athina AI for observability
+// TODO: High: Rate limit exceeded: Too many tokens per min, please wait before trying again.
+// TODO: High: When fails, it should delete or the user can't reupload
 
 const extractData = async (text: string, extractor: Extractor) => {
   const llm = new Bedrock({
@@ -25,22 +27,35 @@ const extractData = async (text: string, extractor: Extractor) => {
     .replace("{{JSON_SCHEMA}}", JSON.stringify(extractor.jsonSchema));
 
   // TODO: High: add retry-after on rate limit error
-  const { text: response } = await llm.complete({ prompt });
-
   try {
-    const extractedDataMatch = response.match(
-      /<extracted_data>([\s\S]*?)<\/extracted_data>/
-    );
-    const extractedData = JSON.parse(extractedDataMatch?.[1] ?? "{}");
+    const { text: response } = await llm.complete({ prompt });
 
-    return extractedData;
+    try {
+      const extractedDataMatch = response.match(
+        /<extracted_data>([\s\S]*?)<\/extracted_data>/
+      );
+      const extractedData = JSON.parse(extractedDataMatch?.[1] ?? "{}");
+
+      return extractedData;
+    } catch (error) {
+      throw new NonRetriableError(
+        "Failed to parse extracted data: " + (error as Error).message,
+        {
+          cause: error,
+        }
+      );
+    }
   } catch (error) {
-    throw new NonRetriableError(
-      "Failed to parse extracted data: " + (error as Error).message,
-      {
-        cause: error,
-      }
-    );
+    console.log("error", error);
+    if (error instanceof ThrottlingException) {
+      throw new RetryAfterError(
+        "Rate limit exceeded: " + (error as Error).message,
+        30000,
+        {
+          cause: error,
+        }
+      );
+    }
   }
 };
 
@@ -109,11 +124,33 @@ export const processNewDocument = inngest.createFunction(
   { id: "process-new-document" },
   { event: "api/document.added" },
   async ({ event, step }) => {
-    const { fileName, fileId, userId } = event.data;
+    const { fileName, userId } = event.data;
+    const supabase = serviceClient();
+
+    const fileId = await step.run("store-document-in-db", async () => {
+      const { data, error } = await supabase
+        .from("documents")
+        .insert({
+          user_id: userId,
+          name: fileName,
+        })
+        .select("id")
+        .single();
+
+      if (error || !data) {
+        throw new NonRetriableError(
+          "Failed to store document in db: " + error?.message,
+          {
+            cause: error,
+          }
+        );
+      }
+
+      return data.id;
+    });
 
     const text = await step.run("parse-document", async () => {
       // Download the file
-      const supabase = serviceClient();
       const { data, error } = await supabase.storage
         .from("documents")
         .download(`${userId}/${fileName}`);
@@ -142,7 +179,21 @@ export const processNewDocument = inngest.createFunction(
       return text;
     });
 
-    const supabase = serviceClient();
+    await step.run("store-text", async () => {
+      const mdFileName = fileName.replace(".pdf", ".md");
+      const { error: textError } = await supabase.storage
+        .from("documents")
+        .upload(`${userId}/${mdFileName}`, text);
+
+      if (textError) {
+        throw new NonRetriableError(
+          "Failed to store text in db: " + textError.message,
+          {
+            cause: textError,
+          }
+        );
+      }
+    });
 
     // TODO: Low: add JSON schema validation
     // TODO: Medium: add retry-after on rate limit error
@@ -151,8 +202,6 @@ export const processNewDocument = inngest.createFunction(
     const caseId = await step.run("extract-case-details", async () => {
       const caseDetailsExtractor = getExtractor(ExtractorType.CASE_DETAILS);
       const caseDetails = await extractData(text, caseDetailsExtractor);
-
-      console.log("caseDetails", caseDetails);
 
       try {
         const { data: caseData, error: caseError } = await supabase
@@ -201,34 +250,53 @@ export const processNewDocument = inngest.createFunction(
     await step.run("extract-tenant-issues", async () => {
       const issuesExtractor = getExtractor(ExtractorType.TENANT_ISSUES);
       const issuesRes = await extractData(text, issuesExtractor);
+
+      if (Object.keys(issuesRes).length === 0) {
+        throw new NonRetriableError(
+          "Failed to extract tenant issues. LLM response: " +
+            JSON.stringify(issuesExtractor),
+          {
+            cause: issuesRes,
+          }
+        );
+      }
+
       const issues = issuesRes.issues;
+
+      console.log("issuesRes", issuesRes);
 
       try {
         // TODO: High: Update the database to new schema
-        const { error: issuesError } = await supabase.from("issues").insert([
-          {
+        const { error: issuesError } = await supabase.from("issues").insert(
+          // @ts-expect-error for later
+          issues.map((issue) => ({
             case_id: caseId,
             user_id: userId,
             document_id: fileId,
-            category: issues.category,
-            subcategory: issues.subcategory,
-            issue_type: issues.issueType,
-            issue_details: issues.issueDetails,
-            duration: issues.duration,
-            tenant_evidence: issues.tenantEvidence,
-            landlord_counterarguments: issues.landlordCounterarguments,
-            landlord_evidence: issues.landlordEvidence,
-            decision: issues.decision,
-            relief_granted: issues.reliefGranted,
-            relief_description: issues.reliefDescription,
-            relief_amount: Number(issues.reliefAmount) ?? null,
-            relief_reason: issues.reliefReason,
-          },
-        ]);
+            category: issue.category,
+            subcategory: issue.subcategory,
+            issue_type: issue.issueType,
+            issue_details: issue.issueDetails,
+            duration: issue.duration,
+            tenant_evidence: issue.tenantEvidence,
+            landlord_counterarguments: issue.landlordCounterarguments,
+            landlord_evidence: issue.landlordEvidence,
+            decision: issue.decision,
+            relief_granted: issue.reliefGranted,
+            relief_description: issue.reliefDescription,
+            relief_amount: isNaN(Number(issue.reliefAmount))
+              ? null
+              : Number(issue.reliefAmount),
+            relief_reason: issue.reliefReason,
+          }))
+        );
 
         if (issuesError) {
           throw new NonRetriableError(
-            "Failed to store issues in db: " + issuesError.message,
+            "Failed to store issues in db: " +
+              issuesError.message +
+              ". Extracted data: " +
+              JSON.stringify(issuesRes),
             {
               cause: issuesError,
             }

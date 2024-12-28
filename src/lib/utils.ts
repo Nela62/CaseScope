@@ -6,6 +6,43 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+// TODO: High: Repeats unnecessarily
+// TODO: Sometimes returns 404 without retrying
+export async function getEvent(eventId: string) {
+  const maxRetries = 5;
+  let retryCount = 0;
+  let error = null;
+
+  while (retryCount < maxRetries) {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_INNGEST_URL}/v1/events/${eventId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${process.env.INNGEST_SIGNING_KEY}`,
+          },
+        }
+      );
+
+      if (response.ok && response.status !== 404) {
+        console.log("response is ok");
+        const json = await response.json();
+        console.log(`event json for ${eventId}`, json);
+        return json.data;
+      } else {
+        retryCount++;
+        if (retryCount < maxRetries) {
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+        }
+      }
+    } catch (err) {
+      error = err;
+    }
+  }
+
+  throw error || new Error(`Failed to fetch event after ${maxRetries} retries`);
+}
+
 export async function getRuns(eventId: string) {
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_INNGEST_URL}/v1/events/${eventId}/runs`,

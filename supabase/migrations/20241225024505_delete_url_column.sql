@@ -49,6 +49,3 @@ ALTER TABLE issues
 ALTER TABLE hearing_cases
   ADD CONSTRAINT hearing_cases_document_id_key UNIQUE (document_id);
 
-ALTER TABLE issues
-  ADD CONSTRAINT issues_document_id_key UNIQUE (document_id);
-

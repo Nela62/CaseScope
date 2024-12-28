@@ -95,6 +95,9 @@ export const CaseLibraryTable = () => {
                   onClick={async () => {
                     await deleteDocument({ id: document.id });
                     await deleteFile([`${userId}/${document.name}`]);
+                    await deleteFile([
+                      `${userId}/${document.name.replace(".pdf", ".md")}`,
+                    ]);
                     setSelectedCaseId(
                       documents && documents.length ? documents[0].id : null
                     );

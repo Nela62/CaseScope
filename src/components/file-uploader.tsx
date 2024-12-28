@@ -44,7 +44,6 @@ export const FileUploader = ({
   useEffect(() => {
     uppy.on("upload-success", (file, response) => {
       if (response.status === 200) {
-        console.log(file?.data);
         if (file?.data) {
           setFiles((prevFiles) => [...prevFiles, file.data]);
         }

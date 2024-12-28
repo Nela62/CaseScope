@@ -7,42 +7,19 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { PlusIcon } from "lucide-react";
-import { useUpload } from "@supabase-cache-helpers/storage-react-query";
-import { createClient } from "@/lib/supabase/client";
 import { useUser } from "@/providers/user-provider";
-import { useUpsertMutation } from "@supabase-cache-helpers/postgrest-react-query";
 import { useAppStore } from "@/providers/app-store-provider";
-import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 
 export const AddDocumentsDialog = () => {
   const { userId } = useUser();
   const { appendFileProcessingEvents } = useAppStore((state) => state);
-  const [isProcessing, setIsProcessing] = useState(false);
   const [open, setOpen] = useState(false);
-  const supabase = createClient();
-  const router = useRouter();
-
-  // TODO: High: Change to upload in the backend and then revalidate cache after it's done
-  const { mutateAsync: upload } = useUpload(
-    supabase.storage.from("documents"),
-    { buildFileName: ({ fileName }) => `${userId}/${fileName}` }
-  );
-  const { mutateAsync: insertDocuments } = useUpsertMutation(
-    supabase.from("documents"),
-    ["id"],
-    "id, name",
-    { ignoreDuplicates: true, onConflict: "name, user_id" }
-  );
-
-  // TODO: add more error handling for files with the same name
 
   const handleDone = useCallback(
     async (files: (File | Blob)[]) => {
-      if (isProcessing) return;
-
-      setIsProcessing(true);
+      setOpen(false);
 
       const processedFiles = files.map((file) =>
         file instanceof File ? file : new File([file], `${uuidv4()}.pdf`)
@@ -60,16 +37,15 @@ export const AddDocumentsDialog = () => {
       });
 
       if (!response.ok) {
+        // TODO: Medium: Display toast with error message
         console.error("Failed to process documents");
         throw new Error("Failed to process documents");
       }
 
       const { data } = await response.json();
-      console.log(data);
       appendFileProcessingEvents(data);
-      setOpen(false);
     },
-    [isProcessing, appendFileProcessingEvents, userId]
+    [appendFileProcessingEvents, userId]
   );
 
   return (

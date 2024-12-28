@@ -8,9 +8,8 @@ export const config = {
   },
 };
 
+// BUG: Can't handle several files at once
 export async function POST(request: Request) {
-  console.log("request", request);
-  // const { files, userId } = await request.json();
   const form = await request.formData();
   const files = form.getAll("files[]") as File[];
   const userId = form.get("userId");
@@ -34,36 +33,50 @@ export async function POST(request: Request) {
     return acc;
   }, []);
 
-  const supabase = await createClient();
+  console.log("uniqueFiles", uniqueFiles);
 
-  const filePaths = await Promise.all(
-    uniqueFiles.map((file) =>
-      supabase.storage.from("documents").upload(file.name, file)
-    )
-  );
+  // TODO: Low: add more error handling for files with the same name
+  try {
+    const supabase = await createClient();
 
-  // TODO: Low: add logging for the upload errors
+    const filePaths = await Promise.all(
+      uniqueFiles.map((file) =>
+        supabase.storage
+          .from("documents")
+          .upload(`${userId}/${file.name}`, file)
+      )
+    );
 
-  if (filePaths.some((filePath) => filePath.error)) {
-    return new Response("Failed to upload files", { status: 500 });
+    // TODO: Low: add logging for the upload errors
+
+    if (filePaths.some((filePath) => filePath.error)) {
+      return new Response("Failed to upload files", { status: 500 });
+    }
+
+    console.log("filePaths", filePaths);
+
+    const { ids } = await inngest.send(
+      filePaths
+        .filter((filePath) => filePath.error === null && filePath.data)
+        .map((filePath) => ({
+          id: `document-added-${filePath.data?.id}`,
+          name: "api/document.added",
+          data: {
+            fileName: filePath.data?.path.split("/").pop(),
+            fileId: filePath.data?.id,
+            userId,
+          },
+        }))
+    );
+
+    return NextResponse.json({
+      data: uniqueFiles.map((file: File, i: number) => ({
+        name: file.name,
+        id: ids[i],
+      })),
+    });
+  } catch (err) {
+    console.error(err);
+    return new Response("Failed to process documents", { status: 500 });
   }
-
-  const { ids } = await inngest.send(
-    filePaths.map((filePath) => ({
-      id: `document-added-${filePath.data?.id}`,
-      name: "api/document.added",
-      data: {
-        fileName: filePath.data?.path.split("/").pop(),
-        fileId: filePath.data?.id,
-        userId,
-      },
-    }))
-  );
-
-  return NextResponse.json({
-    data: uniqueFiles.map((file: File, i: number) => ({
-      name: file.name,
-      id: ids[i],
-    })),
-  });
 }

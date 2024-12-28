@@ -32,11 +32,9 @@ export const CaseDetailsContent = () => {
     return <p>{String(value)}</p>;
   };
 
-  return !caseDetails || isLoading ? (
-    <div>
-      <Skeleton className="h-4 w-full" />
-    </div>
-  ) : (
+  if (!caseDetails || isLoading) return null;
+
+  return (
     // <div className="h-full flex flex-col">
     <ScrollArea className="-mx-4 sm:-mx-6 lg:-mx-8 h-full">
       {/* <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8"> */}
@@ -54,7 +52,11 @@ export const CaseDetailsContent = () => {
                       .replace(/\b\w/g, (l) => l.toUpperCase())}
                   </td>
                   <td className="px-3 py-4 text-sm text-gray-500">
-                    {displayValue(value)}
+                    {isLoading ? (
+                      <Skeleton className="h-4 w-full" />
+                    ) : (
+                      displayValue(value)
+                    )}
                   </td>
                 </tr>
               ))}
