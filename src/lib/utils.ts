@@ -6,8 +6,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-// TODO: High: Repeats unnecessarily
-// TODO: Sometimes returns 404 without retrying
+// FIXME: High: Still returns null event without retrying
 export async function getEvent(eventId: string) {
   const maxRetries = 5;
   let retryCount = 0;
@@ -25,7 +24,6 @@ export async function getEvent(eventId: string) {
       );
 
       if (response.ok && response.status !== 404) {
-        console.log("response is ok");
         const json = await response.json();
         console.log(`event json for ${eventId}`, json);
         return json.data;

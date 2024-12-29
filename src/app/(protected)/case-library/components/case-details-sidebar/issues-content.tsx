@@ -1,5 +1,13 @@
+import { DisplayValue } from "@/components/display-value";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
-import { fetchCaseDetails } from "@/lib/queries";
+import { fetchIssues } from "@/lib/queries";
 import { createClient } from "@/lib/supabase/client";
 import { useAppStore } from "@/providers/app-store-provider";
 import { useQuery } from "@supabase-cache-helpers/postgrest-react-query";
@@ -7,37 +15,58 @@ import { useQuery } from "@supabase-cache-helpers/postgrest-react-query";
 export const IssuesContent = () => {
   const supabase = createClient();
   const { selectedCaseId } = useAppStore((state) => state);
-  const { data: caseDetails, isLoading } = useQuery(
-    fetchCaseDetails(supabase, selectedCaseId ?? ""),
+  const { data: issues, isLoading } = useQuery(
+    fetchIssues(supabase, selectedCaseId ?? ""),
     { enabled: !!selectedCaseId }
   );
 
-  const people = [
-    {
-      name: "Lindsay Walton",
-      title: "Front-end Developer",
-      email: "lindsay.walton@example.com",
-      role: "Member",
-    },
-    {
-      name: "Lindsay Walton",
-      title: "Front-end Developer",
-      email: "lindsay.walt@example.com",
-      role: "Member",
-    },
-    // More people...
-  ];
-
-  return !caseDetails || isLoading ? (
-    <div>
-      <Skeleton className="h-4 w-full" />
-    </div>
-  ) : (
-    <div>
-      <div className="mt-4 flow-root">
-        <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-          <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-            <table className="min-w-full divide-y divide-gray-300">
+  // TODO: High: Y-padding/margin is too much
+  // TODO: High: Accordion triggers need more emphasis
+  return (
+    <ScrollArea className="-mx-4 sm:-mx-6 lg:-mx-8 h-full">
+      <div className="w-full align-middle sm:px-6 lg:px-8">
+        <Accordion type="multiple">
+          {issues?.map((issue) => (
+            <AccordionItem value={issue.id} key={issue.id}>
+              <AccordionTrigger>
+                {isLoading ? (
+                  <Skeleton className="h-4 w-full" />
+                ) : (
+                  issue.issue_type
+                )}
+              </AccordionTrigger>
+              <AccordionContent>
+                <table className="min-w-full divide-y divide-gray-300">
+                  <tbody className="divide-y divide-gray-200">
+                    {Object.entries(issue)
+                      .filter(
+                        ([key, value]) =>
+                          key !== "id" && key !== "document_id" && value
+                      )
+                      .map(([key, value]) => (
+                        <tr key={key}>
+                          <td className="py-4 pr-3 pl-4 text-sm font-medium whitespace-nowrap text-gray-900 sm:pl-0">
+                            {/* TODO: Low: of shouldn't be capitalized */}
+                            {key
+                              .replace(/_/g, " ")
+                              .replace(/\b\w/g, (l) => l.toUpperCase())}
+                          </td>
+                          <td className="px-3 py-4 text-sm text-gray-500">
+                            {isLoading ? (
+                              <Skeleton className="h-4 w-full" />
+                            ) : (
+                              <DisplayValue value={value} />
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                  </tbody>
+                </table>
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
+        {/* <table className="min-w-full divide-y divide-gray-300">
               {/* <thead>
                   <tr>
                     <th
@@ -71,7 +100,7 @@ export const IssuesContent = () => {
                       <span className="sr-only">Edit</span>
                     </th>
                   </tr>
-                </thead> */}
+                </thead> 
               <tbody className="divide-y divide-gray-200">
                 {people.map((person) => (
                   <tr key={person.email}>
@@ -98,58 +127,8 @@ export const IssuesContent = () => {
                   </tr>
                 ))}
               </tbody>
-            </table>
-          </div>
-        </div>
+            </table> */}
       </div>
-      {/* {Object.entries(caseDetails).map(([key, value]) => {
-          if (key === "property_address" && typeof value === "object") {
-            return (
-              <div key={key} className="grid grid-cols-[200px_1fr] gap-x-4">
-                <p className="font-semibold text-gray-900">
-                  {key
-                    .replace(/_/g, " ")
-                    .replace(/\b\w/g, (l) => l.toUpperCase())}
-                </p>
-                <div>
-                  {Object.entries(value as object).map(
-                    ([addrKey, addrValue]) => (
-                      <p key={addrKey}>{String(addrValue)}</p>
-                    )
-                  )}
-                </div>
-              </div>
-            );
-          }
-
-          if (Array.isArray(value)) {
-            return (
-              <div key={key} className="grid grid-cols-[200px_1fr] gap-x-4">
-                <p className="font-semibold text-gray-900">
-                  {key
-                    .replace(/_/g, " ")
-                    .replace(/\b\w/g, (l) => l.toUpperCase())}
-                </p>
-                <div>
-                  {value.map((item, i) => (
-                    <p key={i}>{String(item)}</p>
-                  ))}
-                </div>
-              </div>
-            );
-          }
-
-          return (
-            <div key={key} className="grid grid-cols-[200px_1fr] gap-x-4">
-              <p className="font-semibold text-gray-900">
-                {key
-                  .replace(/_/g, " ")
-                  .replace(/\b\w/g, (l) => l.toUpperCase())}
-              </p>
-              <p>{String(value)}</p>
-            </div>
-          );
-        })} */}
-    </div>
+    </ScrollArea>
   );
 };

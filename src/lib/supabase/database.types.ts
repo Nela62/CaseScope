@@ -86,7 +86,7 @@ export type Database = {
           {
             foreignKeyName: "hearing_cases_document_id_fkey"
             columns: ["document_id"]
-            isOneToOne: false
+            isOneToOne: true
             referencedRelation: "documents"
             referencedColumns: ["id"]
           },
@@ -102,13 +102,14 @@ export type Database = {
           duration: string | null
           id: string
           issue_details: string | null
+          issue_type: string | null
           landlord_counterarguments: string[] | null
           landlord_evidence: string[] | null
-          name: string | null
           relief_amount: number | null
           relief_description: string | null
           relief_granted: boolean | null
           relief_reason: string | null
+          subcategory: string | null
           tenant_evidence: string[] | null
           updated_at: string
           user_id: string
@@ -122,13 +123,14 @@ export type Database = {
           duration?: string | null
           id?: string
           issue_details?: string | null
+          issue_type?: string | null
           landlord_counterarguments?: string[] | null
           landlord_evidence?: string[] | null
-          name?: string | null
           relief_amount?: number | null
           relief_description?: string | null
           relief_granted?: boolean | null
           relief_reason?: string | null
+          subcategory?: string | null
           tenant_evidence?: string[] | null
           updated_at?: string
           user_id: string
@@ -142,13 +144,14 @@ export type Database = {
           duration?: string | null
           id?: string
           issue_details?: string | null
+          issue_type?: string | null
           landlord_counterarguments?: string[] | null
           landlord_evidence?: string[] | null
-          name?: string | null
           relief_amount?: number | null
           relief_description?: string | null
           relief_granted?: boolean | null
           relief_reason?: string | null
+          subcategory?: string | null
           tenant_evidence?: string[] | null
           updated_at?: string
           user_id?: string

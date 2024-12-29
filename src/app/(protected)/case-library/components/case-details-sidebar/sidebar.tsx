@@ -1,13 +1,12 @@
-import { useAppStore } from "@/providers/app-store-provider";
 import { CaseDetailsSidebarTabs } from "./tabs";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { CaseDetailsContent } from "./case-details-content";
+import { IssuesContent } from "./issues-content";
+import { PdfViewer } from "./pdf-viewer";
 
 const tabs = ["Case Details", "Issues", "PDF"];
 
 export const CaseDetailsSidebar = () => {
-  const { selectedCaseId } = useAppStore((state) => state);
-
   return (
     <div className="pt-6 h-full">
       <Tabs defaultValue={tabs[0]} className="flex flex-col h-full">
@@ -22,11 +21,14 @@ export const CaseDetailsSidebar = () => {
           >
             <CaseDetailsContent />
           </TabsContent>
-          <TabsContent value="Issues">
-            <p>Issues for {selectedCaseId}</p>
+          <TabsContent
+            value="Issues"
+            className="h-full m-0 data-[state=active]:flex data-[state=active]:flex-col"
+          >
+            <IssuesContent />
           </TabsContent>
           <TabsContent value="PDF">
-            <p>PDF for {selectedCaseId}</p>
+            <PdfViewer />
           </TabsContent>
         </div>
       </Tabs>
