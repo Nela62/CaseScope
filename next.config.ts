@@ -16,6 +16,11 @@ const nextConfig: NextConfig = {
       crypto: false,
     };
 
+    config.module.rules.push({
+      test: /\.node/,
+      use: "raw-loader",
+    });
+
     return config;
   },
 };

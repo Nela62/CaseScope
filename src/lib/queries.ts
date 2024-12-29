@@ -7,6 +7,18 @@ export const fetchAllDocuments = (supabase: TypedSupabaseClient) => {
     .throwOnError();
 };
 
+export const fetchDocumentById = (
+  supabase: TypedSupabaseClient,
+  documentId: string
+) => {
+  return supabase
+    .from("documents")
+    .select("id, name, created_at")
+    .eq("id", documentId)
+    .maybeSingle()
+    .throwOnError();
+};
+
 export const fetchCaseDetails = (
   supabase: TypedSupabaseClient,
   caseId: string
