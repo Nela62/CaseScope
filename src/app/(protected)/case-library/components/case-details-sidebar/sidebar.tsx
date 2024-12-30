@@ -27,7 +27,10 @@ export const CaseDetailsSidebar = () => {
           >
             <IssuesContent />
           </TabsContent>
-          <TabsContent value="PDF">
+          <TabsContent
+            value="PDF"
+            className="h-full m-0 data-[state=active]:flex data-[state=active]:flex-col"
+          >
             <PdfViewer />
           </TabsContent>
         </div>
