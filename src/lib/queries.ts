@@ -19,26 +19,38 @@ export const fetchDocumentById = (
     .throwOnError();
 };
 
-export const fetchCaseDetails = (
+export const fetchCaseDetailsByDocumentId = (
   supabase: TypedSupabaseClient,
-  caseId: string
+  documentId: string
 ) => {
   return supabase
     .from("hearing_cases")
     .select(
       "id, hearing_dates, hearing_officer, landlord_name, property_address, case_numbers, decision, reasoning, total_relief_granted, length_of_tenancy, created_at"
     )
-    .eq("document_id", caseId)
+    .eq("document_id", documentId)
     .maybeSingle()
     .throwOnError();
 };
 
-export const fetchIssues = (supabase: TypedSupabaseClient, caseId: string) => {
+export const fetchIssuesByDocumentId = (
+  supabase: TypedSupabaseClient,
+  documentId: string
+) => {
   return supabase
     .from("issues")
     .select(
       "id, document_id,  category, subcategory, issue_type, issue_details, duration, tenant_evidence, landlord_counterarguments, landlord_evidence, decision, relief_granted, relief_description, relief_amount, relief_reason, created_at"
     )
-    .eq("document_id", caseId)
+    .eq("document_id", documentId)
+    .throwOnError();
+};
+
+export const fetchAllIssues = (supabase: TypedSupabaseClient) => {
+  return supabase
+    .from("issues")
+    .select(
+      "id, document_id, case_id (id, hearing_dates, hearing_officer, landlord_name, property_address, case_numbers, decision, reasoning, total_relief_granted, length_of_tenancy, created_at), category, subcategory, issue_type, issue_details, duration, tenant_evidence, landlord_counterarguments, landlord_evidence, decision, relief_granted, relief_description, relief_amount, relief_reason, created_at"
+    )
     .throwOnError();
 };

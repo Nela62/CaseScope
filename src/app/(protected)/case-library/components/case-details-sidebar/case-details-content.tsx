@@ -1,7 +1,7 @@
 import { DisplayValue } from "@/components/display-value";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
-import { fetchCaseDetails } from "@/lib/queries";
+import { fetchCaseDetailsByDocumentId } from "@/lib/queries";
 import { createClient } from "@/lib/supabase/client";
 import { useAppStore } from "@/providers/app-store-provider";
 import { useQuery } from "@supabase-cache-helpers/postgrest-react-query";
@@ -10,7 +10,7 @@ export const CaseDetailsContent = () => {
   const supabase = createClient();
   const { selectedCaseId } = useAppStore((state) => state);
   const { data: caseDetails, isLoading } = useQuery(
-    fetchCaseDetails(supabase, selectedCaseId ?? ""),
+    fetchCaseDetailsByDocumentId(supabase, selectedCaseId ?? ""),
     { enabled: !!selectedCaseId }
   );
 

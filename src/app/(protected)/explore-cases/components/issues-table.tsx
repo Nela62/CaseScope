@@ -1,40 +1,27 @@
 import { DataTable } from "@/components/ui/data-table";
-import { Issue } from "@/types/issue";
 import { issueColumns } from "../columns/issue-columns";
-
-export const issues: Issue[] = [
-  {
-    id: "728ed52f",
-    category: "habitability",
-    name: "Ineffective waterproofing to prevent wet or moldy walls",
-    description: "The apartment is dirty and unsafe.",
-    tenantEvidence: ["The apartment is dirty and unsafe."],
-    landlordCounterarguments: ["The apartment is clean and safe."],
-    landlordEvidence: ["The apartment is clean and safe."],
-    decision: "pro-tenant",
-    reliefGranted: true,
-    reliefDescription: "The landlord agreed to clean the apartment.",
-    reliefAmount: 100,
-    reliefReason: "The tenant's health and safety are at risk.",
-    duration: "1 month",
-  },
-  {
-    id: "728ed523",
-    category: "habitability",
-    name: "Ineffective waterproofing to prevent wet or moldy walls",
-    description: "The apartment is dirty and unsafe.",
-    tenantEvidence: ["The apartment is dirty and unsafe."],
-    landlordCounterarguments: ["The apartment is clean and safe."],
-    landlordEvidence: ["The apartment is clean and safe."],
-    decision: "pro-tenant",
-    reliefGranted: true,
-    reliefDescription: "The landlord agreed to clean the apartment.",
-    reliefAmount: 100,
-    reliefReason: "The tenant's health and safety are at risk.",
-    duration: "1 month",
-  },
-];
+import { createClient } from "@/lib/supabase/client";
+import { useQuery } from "@supabase-cache-helpers/postgrest-react-query";
+import { fetchAllIssues } from "@/lib/queries";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export const IssuesTable = () => {
-  return <DataTable columns={issueColumns} data={issues} />;
+  const supabase = createClient();
+  const { data: issues, error } = useQuery(fetchAllIssues(supabase));
+
+  if (error) {
+    console.error(error);
+    return null;
+  }
+
+  // TODO: Low: The x overflow scroll bar is overflowing
+  // TODO: Low: Use a different table UI
+  // TODO: Low: No padding after pagination
+  // TODO: Low: Only the table should scroll, not the entire page
+
+  return issues ? (
+    <DataTable columns={issueColumns} data={issues} />
+  ) : (
+    <Skeleton className="h-full" />
+  );
 };

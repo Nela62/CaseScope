@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/accordion";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
-import { fetchIssues } from "@/lib/queries";
+import { fetchIssuesByDocumentId } from "@/lib/queries";
 import { createClient } from "@/lib/supabase/client";
 import { useAppStore } from "@/providers/app-store-provider";
 import { useQuery } from "@supabase-cache-helpers/postgrest-react-query";
@@ -16,7 +16,7 @@ export const IssuesContent = () => {
   const supabase = createClient();
   const { selectedCaseId } = useAppStore((state) => state);
   const { data: issues, isLoading } = useQuery(
-    fetchIssues(supabase, selectedCaseId ?? ""),
+    fetchIssuesByDocumentId(supabase, selectedCaseId ?? ""),
     { enabled: !!selectedCaseId }
   );
 

@@ -1,4 +1,3 @@
-import { redirect } from "next/navigation";
 import {
   HydrationBoundary,
   QueryClient,
@@ -14,11 +13,11 @@ export default async function CaseLibraryPage() {
   const supabase = await createClient();
   const queryClient = new QueryClient();
 
+  // TODO: Low: Consider prefetching issues and case details
+
   await prefetchQuery(queryClient, fetchAllDocuments(supabase));
 
   return (
-    // Neat! Serialization is now as easy as passing props.
-    // HydrationBoundary is a Client Component, so hydration will happen there.
     <HydrationBoundary state={dehydrate(queryClient)}>
       <CaseLibraryComponent />
     </HydrationBoundary>

@@ -38,8 +38,10 @@ export default async function ProtectedLayout({
   return (
     <UserProvider userId={data.user.id}>
       <div className="flex lg:flex-row flex-col w-full h-full bg-background">
-        <NavBar />
-        <main className="bg-gray-50 w-full">
+        <div className="flex-none h-full">
+          <NavBar />
+        </div>
+        <main className="bg-gray-50 overflow-y-auto flex-1 min-w-0">
           <div className="px-4 sm:px-6 lg:px-8 h-full">{children}</div>
         </main>
       </div>

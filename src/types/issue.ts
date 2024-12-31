@@ -8,7 +8,7 @@ export type IssueCategory =
 
 export type Issue = {
   id: string;
-  category: IssueCategory;
+  category: string;
   name: string;
   description: string;
   duration: string | null;

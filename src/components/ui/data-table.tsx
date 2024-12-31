@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/table";
 import { DataTablePagination } from "./data-table-pagination";
 import { useState } from "react";
+import { cn } from "@/lib/utils";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -46,6 +47,7 @@ export function DataTable<TData, TValue>({
     getPaginationRowModel: getPaginationRowModel(),
   });
 
+  // TODO: Medium: The table shouldn't overflow all the way to the right
   return (
     <div className="space-y-4">
       <div className="mt-8 flow-root">
@@ -60,11 +62,12 @@ export function DataTable<TData, TValue>({
                         return (
                           <TableHead
                             key={header.id}
-                            className={
+                            className={cn(
                               index === 0
                                 ? "py-3.5 pr-3 pl-4 text-left text-sm font-semibold text-gray-900 sm:pl-6"
-                                : "px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                            }
+                                : "px-3 py-3.5 text-left text-sm font-semibold text-gray-900",
+                              "whitespace-nowrap"
+                            )}
                             // className="font-semibold py-2 text-center"
                           >
                             {header.isPlaceholder
@@ -87,8 +90,10 @@ export function DataTable<TData, TValue>({
                         data-state={row.getIsSelected() && "selected"}
                         className="hover:bg-muted cursor-pointer"
                         onClick={() => {
-                          row.toggleSelected();
-                          onRowClick?.(row.original);
+                          if (onRowClick) {
+                            row.toggleSelected();
+                            onRowClick(row.original);
+                          }
                         }}
                       >
                         {row.getVisibleCells().map((cell, index) => (
@@ -97,7 +102,7 @@ export function DataTable<TData, TValue>({
                             className={
                               index === 0
                                 ? "py-2 pr-3 pl-4 text-sm font-medium whitespace-nowrap text-gray-900 sm:pl-6"
-                                : "px-3 py-2 text-sm whitespace-nowrap text-gray-500"
+                                : "px-3 py-2 text-sm text-gray-500"
                             }
                           >
                             {flexRender(

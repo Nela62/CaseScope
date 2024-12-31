@@ -1,30 +1,25 @@
-"use client";
+import {
+  HydrationBoundary,
+  QueryClient,
+  dehydrate,
+} from "@tanstack/react-query";
+import { prefetchQuery } from "@supabase-cache-helpers/postgrest-react-query";
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Filters } from "./components/filters";
-import { CasesTable } from "./components/cases-table";
-import { IssuesTable } from "./components/issues-table";
+import { createClient } from "@/lib/supabase/server";
+import { fetchAllIssues } from "@/lib/queries";
+import { ExploreCasesComponent } from "./explore-cases-component";
 
-export default function ExploreCasesPage() {
+export default async function ExploreCasesPage() {
+  const supabase = await createClient();
+  const queryClient = new QueryClient();
+
+  // TODO: Low: Consider prefetching issues and case details
+
+  await prefetchQuery(queryClient, fetchAllIssues(supabase));
+
   return (
-    <div className="flex h-full">
-      <Filters />
-      <div className="flex-1 py-4 px-4">
-        <Tabs defaultValue="cases">
-          <TabsList className="mb-4">
-            <TabsTrigger value="aggregated">Aggregated</TabsTrigger>
-            <TabsTrigger value="cases">Cases</TabsTrigger>
-            <TabsTrigger value="issues">Issues</TabsTrigger>
-          </TabsList>
-          <TabsContent value="cases">
-            <CasesTable />
-          </TabsContent>
-          <TabsContent value="aggregated">Aggregated</TabsContent>
-          <TabsContent value="issues">
-            <IssuesTable />
-          </TabsContent>
-        </Tabs>
-      </div>
-    </div>
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <ExploreCasesComponent />
+    </HydrationBoundary>
   );
 }

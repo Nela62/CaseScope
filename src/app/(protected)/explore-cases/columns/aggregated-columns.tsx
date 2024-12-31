@@ -15,24 +15,20 @@ import { ColumnDef } from "@tanstack/react-table";
 //   created_at
 // ),
 
-// type Issue = Database["public"]["Tables"]["issues"]["Row"];
-
-export type Issue = {
+export type AggregatedIssue = {
+  issue_type: string;
   category: string;
   subcategory: string;
   tenant_evidence: string[];
   landlord_evidence: string[];
   landlord_counterarguments: string[];
-  decision: string;
-  relief_granted: boolean;
-  relief_description: string;
-  relief_amount: number;
-  relief_reason: string;
-  property_address: string;
-  landlord_name: string;
+  pro_tenant_decisions: number;
+  pro_landlord_decisions: number;
+  total_relief_amount: number;
+  relief_count: number;
 };
 
-export const issueColumns: ColumnDef<Issue>[] = [
+export const issueTypeColumns: ColumnDef<AggregatedIssue>[] = [
   {
     accessorKey: "category",
     header: "Category",
@@ -49,24 +45,13 @@ export const issueColumns: ColumnDef<Issue>[] = [
     header: "Issue Type",
   },
   {
-    accessorKey: "issue_details",
-    header: "Issue Details",
-  },
-  {
-    accessorKey: "duration",
-    header: "Duration",
-    cell: ({ row }) => {
-      return <div className="text-center">{row.getValue("duration")}</div>;
-    },
-  },
-  {
     accessorKey: "tenant_evidence",
     header: "Tenant Evidence",
   },
-  {
-    accessorKey: "landlord_counterarguments",
-    header: "Landlord Counterarguments",
-  },
+  // {
+  //   accessorKey: "landlord_counterarguments",
+  //   header: "Landlord Counterarguments",
+  // },
   {
     accessorKey: "landlord_evidence",
     header: "Landlord Evidence",
@@ -81,23 +66,13 @@ export const issueColumns: ColumnDef<Issue>[] = [
   {
     accessorKey: "relief_granted",
     header: "Relief Granted",
-    cell: ({ row }) => {
-      return (
-        <div className="text-center">
-          {row.getValue("relief_granted") ? "Yes" : "No"}
-        </div>
-      );
-    },
   },
+
   {
-    accessorKey: "relief_description",
-    header: "Relief Description",
-  },
-  {
-    accessorKey: "relief_amount",
-    header: "Relief Amount",
+    accessorKey: "average_relief_amount",
+    header: "Average Relief Amount",
     cell: ({ row }) => {
-      const amount = parseFloat(row.getValue("relief_amount"));
+      const amount = parseFloat(row.getValue("average_relief_amount"));
       const formatted = new Intl.NumberFormat("en-US", {
         style: "currency",
         currency: "USD",
@@ -105,17 +80,5 @@ export const issueColumns: ColumnDef<Issue>[] = [
 
       return <div className="text-center">{formatted}</div>;
     },
-  },
-  {
-    accessorKey: "relief_reason",
-    header: "Relief Reason",
-  },
-  {
-    accessorKey: "property_address",
-    header: "Property Address",
-  },
-  {
-    accessorKey: "landlord_name",
-    header: "Landlord Name",
   },
 ];
