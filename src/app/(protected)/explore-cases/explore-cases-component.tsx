@@ -1,18 +1,10 @@
 "use client";
 
-import { Tabs, TabsContent } from "@/components/ui/tabs";
-import { ExploreCasesTabs } from "./components/explore-cases-tabs";
+// import { Tabs, TabsContent } from "@/components/ui/tabs";
+// import { ExploreCasesTabs } from "./components/explore-cases-tabs";
 import { IssuesTable } from "./components/issues-table";
-import { IssueTypeTable } from "./components/issue-type-table";
 
-const tabs = [
-  "All",
-  "By Category",
-  "By Subcategory",
-  "By Issue Type",
-  "By Location",
-  "By Landlord",
-];
+// const tabs = ["All", "By Landlord"];
 
 export const ExploreCasesComponent = () => {
   return (
@@ -28,19 +20,14 @@ export const ExploreCasesComponent = () => {
             {/* TODO: Low: Add export button */}
           </div>
         </div>
-        <Tabs defaultValue={tabs[0]}>
+        <IssuesTable />
+        {/* <Tabs defaultValue={tabs[0]}>
           <ExploreCasesTabs tabs={tabs} />
           <TabsContent value="All">
             <IssuesTable />
           </TabsContent>
-          <TabsContent value="By Category"></TabsContent>
-          <TabsContent value="By Subcategory"></TabsContent>
-          <TabsContent value="By Issue Type">
-            <IssueTypeTable />
-          </TabsContent>
-          <TabsContent value="By Location"></TabsContent>
           <TabsContent value="By Landlord"></TabsContent>
-        </Tabs>
+        </Tabs> */}
       </div>
     </div>
   );

@@ -24,11 +24,7 @@ export const ExploreCasesTabs = ({ tabs }: { tabs: string[] }) => {
         <div className="hidden sm:block">
           <TabsList defaultValue={tabs[0]}>
             {tabs.map((tab) => (
-              <TabsTrigger
-                key={tab}
-                value={tab}
-                className="bg-gray-50 bg-white"
-              >
+              <TabsTrigger key={tab} value={tab} className="bg-white w-fit">
                 {tab}
               </TabsTrigger>
             ))}
