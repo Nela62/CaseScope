@@ -12,7 +12,6 @@ import Image from "next/image";
 export const NavBar = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const pathname = usePathname();
-  // TODO: Add support for /my-cases/case-id
 
   return (
     <>

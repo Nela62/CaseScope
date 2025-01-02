@@ -1,4 +1,4 @@
-import { Book, BookOpen, BriefcaseBusiness } from "lucide-react";
+import { Book, BookOpen } from "lucide-react";
 
 export type NavigationItem = {
   name: string;
@@ -17,9 +17,9 @@ export const navigationItems: NavigationItem[] = [
     href: "/explore-cases",
     icon: BookOpen,
   },
-  {
-    name: "My Cases",
-    href: "/my-cases",
-    icon: BriefcaseBusiness,
-  },
+  // {
+  //   name: "My Cases",
+  //   href: "/my-cases",
+  //   icon: BriefcaseBusiness,
+  // },
 ];

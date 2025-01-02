@@ -7,12 +7,12 @@ import RadioGroupCardsRow from "@/components/ui/radio-group-cards-row";
 import { useMemo, useState } from "react";
 import { getIssues } from "./get-issues";
 
-const groupByOptions = [
+export const groupByOptions = [
   "None",
   "Category",
   "Subcategory",
   "Issue Type",
-  "Landlord",
+  // "Landlord",
 ];
 
 export const IssuesTable = () => {
@@ -20,9 +20,6 @@ export const IssuesTable = () => {
   const { data: issues, error } = useQuery(fetchAllIssues(supabase));
   const [groupBy, setGroupBy] = useState("None");
 
-  console.log(issues);
-
-  // TODO: High: Fix the type
   const { data, columns } = useMemo(
     () => getIssues(issues || [], groupBy),
     [issues, groupBy]
@@ -46,7 +43,7 @@ export const IssuesTable = () => {
 
       {issues ? (
         <div className="flex-1">
-          <AGTable data={data} columns={columns} />
+          <AGTable key={groupBy} data={data} columns={columns} />
         </div>
       ) : (
         <Skeleton className="h-full" />
