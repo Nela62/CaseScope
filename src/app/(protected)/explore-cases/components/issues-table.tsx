@@ -20,6 +20,8 @@ export const IssuesTable = () => {
   const { data: issues, error } = useQuery(fetchAllIssues(supabase));
   const [groupBy, setGroupBy] = useState("None");
 
+  console.log(issues);
+
   // TODO: High: Fix the type
   const { data, columns } = useMemo(
     () => getIssues(issues || [], groupBy),

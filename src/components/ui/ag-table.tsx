@@ -37,8 +37,8 @@ export const AGTable = ({
   data: Record<string, unknown>[];
   columns: ColDef[];
 }) => {
-  const [rowData, setRowData] = useState(data);
-  const [colDefs, setColDefs] = useState(columns);
+  const [rowData] = useState(data);
+  const [colDefs] = useState(columns);
 
   const defaultColDef = useMemo(
     () => ({

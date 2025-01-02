@@ -42,6 +42,8 @@ Remember:
 - Adhere strictly to the JSON schema provided.
 `;
 
+// TODO: Medium: Change landlord counter_arguments to landlord_response
+
 // TODO: Low: Shorten the issue names
 // TODO: Low: Improve duration
 export const jsonSchema = {
