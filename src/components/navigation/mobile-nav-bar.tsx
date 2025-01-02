@@ -8,6 +8,7 @@ import {
 import { type NavigationItem } from "./navigation-items";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { usePathname } from "next/navigation";
 
 export const MobileNavBar = ({
   open,
@@ -18,6 +19,8 @@ export const MobileNavBar = ({
   setOpen: (open: boolean) => void;
   navigation: NavigationItem[];
 }) => {
+  const pathname = usePathname();
+
   return (
     <Dialog open={open} onClose={setOpen} className="relative z-50 lg:hidden">
       <DialogBackdrop
@@ -60,7 +63,7 @@ export const MobileNavBar = ({
                         <Link
                           href={item.href}
                           className={cn(
-                            item.current
+                            pathname.startsWith(item.href)
                               ? "bg-gray-50 text-indigo-600"
                               : "text-gray-700 hover:bg-gray-50 hover:text-indigo-600",
                             "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold"
@@ -69,7 +72,7 @@ export const MobileNavBar = ({
                           <item.icon
                             aria-hidden="true"
                             className={cn(
-                              item.current
+                              pathname.startsWith(item.href)
                                 ? "text-indigo-600"
                                 : "text-gray-400 group-hover:text-indigo-600",
                               "size-6 shrink-0"
