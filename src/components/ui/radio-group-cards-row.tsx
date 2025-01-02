@@ -7,13 +7,15 @@ import { cn } from "@/lib/utils";
 export default function RadioGroupCardsRow({
   options,
   label,
+  selectedOption,
   onChange,
 }: {
   options: string[];
   label: string;
+  selectedOption?: string;
   onChange: (option: string) => void;
 }) {
-  const [option, setOption] = useState(options[0]);
+  const [option, setOption] = useState(selectedOption || options[0]);
 
   return (
     <fieldset aria-label={label}>
