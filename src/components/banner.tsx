@@ -14,13 +14,13 @@ export const Banner = () => {
       <div className="absolute top-0 left-0 h-full w-full bg-gradient-to-r from-[#fba776] to-[#9089fc] opacity-50 blur-2xl pointer-events-none"></div>
       <p className="text-sm/6 text-gray-900 flex items-center gap-1">
         For demo purposes only.
-        <Link
+        {/* <Link
           href="/login"
           className="font-semibold whitespace-nowrap flex gap-1.5 items-center"
         >
           Login
           <ArrowRightIcon className="size-4" />
-        </Link>
+        </Link> */}
       </p>
     </div>
   );
