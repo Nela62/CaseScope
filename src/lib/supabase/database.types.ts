@@ -173,6 +173,161 @@ export type Database = {
           },
         ]
       }
+      public_documents: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      public_hearing_cases: {
+        Row: {
+          case_numbers: string[]
+          created_at: string
+          decision: string
+          document_id: string
+          hearing_dates: string[]
+          hearing_officer: string
+          id: string
+          landlord_name: string
+          length_of_tenancy: string
+          property_address: Json
+          reasoning: string
+          total_relief_granted: number
+          updated_at: string
+        }
+        Insert: {
+          case_numbers: string[]
+          created_at?: string
+          decision: string
+          document_id: string
+          hearing_dates: string[]
+          hearing_officer: string
+          id?: string
+          landlord_name: string
+          length_of_tenancy: string
+          property_address: Json
+          reasoning: string
+          total_relief_granted: number
+          updated_at?: string
+        }
+        Update: {
+          case_numbers?: string[]
+          created_at?: string
+          decision?: string
+          document_id?: string
+          hearing_dates?: string[]
+          hearing_officer?: string
+          id?: string
+          landlord_name?: string
+          length_of_tenancy?: string
+          property_address?: Json
+          reasoning?: string
+          total_relief_granted?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "public_hearing_cases_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: true
+            referencedRelation: "public_documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      public_issues: {
+        Row: {
+          case_id: string
+          category: string | null
+          created_at: string
+          decision: string | null
+          document_id: string
+          duration: string | null
+          id: string
+          issue_details: string | null
+          issue_type: string | null
+          landlord_counterarguments: string[] | null
+          landlord_evidence: string[] | null
+          relief_amount: number | null
+          relief_description: string | null
+          relief_granted: boolean | null
+          relief_reason: string | null
+          subcategory: string | null
+          tenant_evidence: string[] | null
+          updated_at: string
+        }
+        Insert: {
+          case_id: string
+          category?: string | null
+          created_at?: string
+          decision?: string | null
+          document_id: string
+          duration?: string | null
+          id?: string
+          issue_details?: string | null
+          issue_type?: string | null
+          landlord_counterarguments?: string[] | null
+          landlord_evidence?: string[] | null
+          relief_amount?: number | null
+          relief_description?: string | null
+          relief_granted?: boolean | null
+          relief_reason?: string | null
+          subcategory?: string | null
+          tenant_evidence?: string[] | null
+          updated_at?: string
+        }
+        Update: {
+          case_id?: string
+          category?: string | null
+          created_at?: string
+          decision?: string | null
+          document_id?: string
+          duration?: string | null
+          id?: string
+          issue_details?: string | null
+          issue_type?: string | null
+          landlord_counterarguments?: string[] | null
+          landlord_evidence?: string[] | null
+          relief_amount?: number | null
+          relief_description?: string | null
+          relief_granted?: boolean | null
+          relief_reason?: string | null
+          subcategory?: string | null
+          tenant_evidence?: string[] | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "public_issues_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "public_hearing_cases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "public_issues_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "public_documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never

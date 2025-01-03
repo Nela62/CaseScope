@@ -6,6 +6,8 @@ import { IssuesTable } from "./components/issues-table";
 
 // const tabs = ["All", "By Landlord"];
 
+// TODO: High: The issues table doesn't rerender when new cases are added
+
 export const ExploreCasesComponent = () => {
   return (
     <div className="h-full space-x-4 md:space-x-6 lg:space-x-8">

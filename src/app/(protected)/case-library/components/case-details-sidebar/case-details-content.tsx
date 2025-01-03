@@ -22,7 +22,7 @@ export const CaseDetailsContent = () => {
         <table className="min-w-full divide-y divide-gray-300">
           <tbody className="divide-y divide-gray-200">
             {Object.entries(caseDetails)
-              .filter(([key]) => key !== "id")
+              .filter(([key]) => key !== "id" && key !== "created_at")
               .map(([key, value]) => (
                 <tr key={key}>
                   <td className="py-4 pr-3 pl-4 text-sm font-medium whitespace-nowrap text-gray-900 sm:pl-0">

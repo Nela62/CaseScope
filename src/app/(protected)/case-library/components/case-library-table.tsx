@@ -38,7 +38,7 @@ export const CaseLibraryTable = () => {
   const supabase = createClient();
   const { data: documents, isLoading } = useQuery(fetchAllDocuments(supabase));
   const { setSelectedCaseId } = useAppStore((state) => state);
-  const { userId } = useUser();
+  const { userId, isAnonymous } = useUser();
 
   useEffect(() => {
     if (documents && documents.length > 0) {

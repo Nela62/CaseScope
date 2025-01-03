@@ -44,7 +44,10 @@ export const IssuesContent = () => {
                     {Object.entries(issue)
                       .filter(
                         ([key, value]) =>
-                          key !== "id" && key !== "document_id" && value
+                          key !== "id" &&
+                          key !== "document_id" &&
+                          key !== "created_at" &&
+                          value
                       )
                       .map(([key, value]) => (
                         <tr key={key}>
