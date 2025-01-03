@@ -28,11 +28,14 @@ export const IssuesContent = () => {
         <Accordion type="multiple">
           {issues?.map((issue) => (
             <AccordionItem value={issue.id} key={issue.id}>
-              <AccordionTrigger>
+              <AccordionTrigger className="">
                 {isLoading ? (
                   <Skeleton className="h-4 w-full" />
+                ) : issue.issue_type ? (
+                  issue.issue_type.charAt(0).toUpperCase() +
+                  issue.issue_type.slice(1)
                 ) : (
-                  issue.issue_type
+                  "Issue"
                 )}
               </AccordionTrigger>
               <AccordionContent>

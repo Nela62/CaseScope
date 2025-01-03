@@ -36,7 +36,7 @@ export const PdfViewer = () => {
 
   return fileUrl ? (
     <div className="h-full w-full">
-      <Viewer fileUrl={fileUrl} />;
+      <Viewer fileUrl={fileUrl} />
     </div>
   ) : (
     <Skeleton className="h-full w-full" />

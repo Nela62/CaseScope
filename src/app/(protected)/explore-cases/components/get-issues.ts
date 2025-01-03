@@ -218,7 +218,6 @@ export const getIssues = (
       },
     ];
 
-    console.log(data);
 
     return {
       data: Object.values(data),

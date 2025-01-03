@@ -1,15 +1,15 @@
 "use client";
 
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from "@/components/ui/resizable";
 import { CaseLibraryTable } from "./components/case-library-table";
 import { useAppStore } from "@/providers/app-store-provider";
 import { AddDocumentsDialog } from "./components/add-documents-dialog";
 import { DisplayFileProcessingStatus } from "@/components/display-file-processing-status";
 import { CaseDetailsSidebar } from "./components/case-details-sidebar/sidebar";
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable";
 
 // TODO: Medium: Maybe use a hashmap instead of an array to speed it up
 // TODO: High: Fetch all currently processing files on init
@@ -35,7 +35,6 @@ export const CaseLibraryComponent = () => {
                 <AddDocumentsDialog />
               </div>
             </div>
-            {/* TODO: Medium: Add scroll */}
             <CaseLibraryTable />
           </div>
         </ResizablePanel>

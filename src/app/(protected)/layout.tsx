@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { UserProvider } from "@/providers/user-provider";
 import { NavBar } from "@/components/navigation/nav-bar";
+import { Banner } from "@/components/banner";
 
 export default async function ProtectedLayout({
   children,
@@ -21,12 +22,22 @@ export default async function ProtectedLayout({
       }
 
       return (
-        <UserProvider userId={data.user.id}>
-          <div className="flex lg:flex-row flex-col w-full h-full bg-background">
-            <NavBar />
-            <main className="py-6 bg-gray-50 w-full">
-              <div className="px-4 sm:px-6 lg:px-8 h-full">{children}</div>
-            </main>
+        <UserProvider
+          userId={data.user.id}
+          isAnonymous={data.user.is_anonymous ?? true}
+        >
+          <div className="flex flex-col w-full h-full">
+            <div className="flex-none">
+              <Banner />
+            </div>
+            <div className="flex-1 min-h-0">
+              <div className="flex lg:flex-row flex-col w-full h-full bg-background">
+                <NavBar />
+                <main className="bg-gray-50 w-full">
+                  <div className="px-4 sm:px-6 lg:px-8 h-full">{children}</div>
+                </main>
+              </div>
+            </div>
           </div>
         </UserProvider>
       );
@@ -36,7 +47,10 @@ export default async function ProtectedLayout({
   }
 
   return (
-    <UserProvider userId={data.user.id}>
+    <UserProvider
+      userId={data.user.id}
+      isAnonymous={data.user.is_anonymous ?? true}
+    >
       <div className="flex lg:flex-row flex-col w-full h-full bg-background">
         <div className="flex-none h-full">
           <NavBar />

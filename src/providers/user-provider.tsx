@@ -4,6 +4,7 @@ import { createContext, useContext } from "react";
 
 type UserContextType = {
   userId: string;
+  isAnonymous: boolean;
 };
 
 export const UserContext = createContext<UserContextType | undefined>(
@@ -20,12 +21,16 @@ export function useUser() {
 
 export function UserProvider({
   userId,
+  isAnonymous,
   children,
 }: {
   userId: string;
+  isAnonymous: boolean;
   children: React.ReactNode;
 }) {
   return (
-    <UserContext.Provider value={{ userId }}>{children}</UserContext.Provider>
+    <UserContext.Provider value={{ userId, isAnonymous }}>
+      {children}
+    </UserContext.Provider>
   );
 }

@@ -1,17 +1,26 @@
 "use client";
 
 import { useState } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { MobileNavBar } from "./mobile-nav-bar";
 import { navigationItems } from "./navigation-items";
 import Image from "next/image";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
+import { createClient } from "@/lib/supabase/client";
 
 export const NavBar = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
+  const supabase = createClient();
 
   return (
     <>
@@ -67,21 +76,30 @@ export const NavBar = () => {
               </li>
 
               <li className="-mx-6 mt-auto">
-                <Link
-                  href="#"
-                  className="flex items-center gap-x-4 px-6 py-3 text-sm/6 font-semibold text-gray-900 hover:bg-gray-50"
-                >
-                  <Image
-                    alt=""
-                    src="/demo-avatar.jpg"
-                    width="0"
-                    height="0"
-                    sizes="100vw"
-                    className="size-8 rounded-full bg-gray-50"
-                  />
-                  <span className="sr-only">Your profile</span>
-                  <span aria-hidden="true">Aisha Carter</span>
-                </Link>
+                <DropdownMenu>
+                  <DropdownMenuTrigger className="flex items-center gap-x-4 px-6 py-3 text-sm/6 font-semibold text-gray-900 hover:bg-gray-50">
+                    <Image
+                      alt=""
+                      src="/demo-avatar.jpg"
+                      width="0"
+                      height="0"
+                      sizes="100vw"
+                      className="size-8 rounded-full bg-gray-50"
+                    />
+                    <span className="sr-only">Your profile</span>
+                    <span aria-hidden="true">Aisha Carter</span>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuItem
+                      onClick={() => {
+                        supabase.auth.signOut();
+                        router.push("/login");
+                      }}
+                    >
+                      Logout
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </li>
             </ul>
           </nav>

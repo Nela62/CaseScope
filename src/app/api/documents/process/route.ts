@@ -33,8 +33,6 @@ export async function POST(request: Request) {
     return acc;
   }, []);
 
-  console.log("uniqueFiles", uniqueFiles);
-
   // TODO: Low: add more error handling for files with the same name
   try {
     const supabase = await createClient();
@@ -52,8 +50,6 @@ export async function POST(request: Request) {
     if (filePaths.some((filePath) => filePath.error)) {
       return new Response("Failed to upload files", { status: 500 });
     }
-
-    console.log("filePaths", filePaths);
 
     const { ids } = await inngest.send(
       filePaths
