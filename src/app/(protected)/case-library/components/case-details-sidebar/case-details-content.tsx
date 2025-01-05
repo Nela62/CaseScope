@@ -1,18 +1,27 @@
 import { DisplayValue } from "@/components/display-value";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
-import { fetchCaseDetailsByDocumentId } from "@/lib/queries";
+import {
+  fetchCaseDetailsByDocumentId,
+  fetchPublicCaseDetailsByDocumentId,
+} from "@/lib/queries";
 import { createClient } from "@/lib/supabase/client";
 import { useAppStore } from "@/providers/app-store-provider";
+import { useUser } from "@/providers/user-provider";
 import { useQuery } from "@supabase-cache-helpers/postgrest-react-query";
 
 export const CaseDetailsContent = () => {
   const supabase = createClient();
+  const { isAnonymous } = useUser();
   const { selectedCaseId } = useAppStore((state) => state);
-  const { data: caseDetails, isLoading } = useQuery(
-    fetchCaseDetailsByDocumentId(supabase, selectedCaseId ?? ""),
-    { enabled: !!selectedCaseId }
-  );
+
+  const fetchFn = isAnonymous
+    ? fetchPublicCaseDetailsByDocumentId(supabase, selectedCaseId ?? "")
+    : fetchCaseDetailsByDocumentId(supabase, selectedCaseId ?? "");
+
+  const { data: caseDetails, isLoading } = useQuery(fetchFn, {
+    enabled: !!selectedCaseId,
+  });
 
   if (!caseDetails || isLoading) return null;
 

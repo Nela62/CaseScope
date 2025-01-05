@@ -7,18 +7,27 @@ import {
 } from "@/components/ui/accordion";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
-import { fetchIssuesByDocumentId } from "@/lib/queries";
+import {
+  fetchIssuesByDocumentId,
+  fetchPublicIssuesByDocumentId,
+} from "@/lib/queries";
 import { createClient } from "@/lib/supabase/client";
 import { useAppStore } from "@/providers/app-store-provider";
+import { useUser } from "@/providers/user-provider";
 import { useQuery } from "@supabase-cache-helpers/postgrest-react-query";
 
 export const IssuesContent = () => {
   const supabase = createClient();
+  const { isAnonymous } = useUser();
   const { selectedCaseId } = useAppStore((state) => state);
-  const { data: issues, isLoading } = useQuery(
-    fetchIssuesByDocumentId(supabase, selectedCaseId ?? ""),
-    { enabled: !!selectedCaseId }
-  );
+
+  const fetchFn = isAnonymous
+    ? fetchPublicIssuesByDocumentId(supabase, selectedCaseId ?? "")
+    : fetchIssuesByDocumentId(supabase, selectedCaseId ?? "");
+
+  const { data: issues, isLoading } = useQuery(fetchFn, {
+    enabled: !!selectedCaseId,
+  });
 
   // TODO: High: Y-padding/margin is too much
   // TODO: High: Accordion triggers need more emphasis

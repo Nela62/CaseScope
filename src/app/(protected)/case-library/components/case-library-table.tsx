@@ -46,7 +46,6 @@ export const CaseLibraryTable = () => {
   const { setSelectedCaseId } = useAppStore((state) => state);
 
   useEffect(() => {
-    console.log("documents", documents);
     if (documents && documents.length > 0) {
       setSelectedCaseId(documents[0].id);
     }
