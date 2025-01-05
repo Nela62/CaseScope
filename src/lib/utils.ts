@@ -120,3 +120,35 @@ export function createRunPoller(
   // Return cleanup function
   return () => clearInterval(intervalId);
 }
+
+export async function logToAthina(params: {
+  prompt: string | { role: string; content: string }[];
+  languageModelId: string;
+  response: string;
+  promptSlug?: string;
+  externalReferenceId?: string;
+  cost?: number;
+  customAttributes?: Record<string, any>;
+}) {
+  try {
+    await fetch("https://log.athina.ai/api/v2/log/inference", {
+      method: "POST",
+      body: JSON.stringify({
+        prompt_slug: params.promptSlug,
+        prompt: params.prompt,
+        language_model_id: params.languageModelId,
+        response: params.response,
+        external_reference_id: params.externalReferenceId,
+        cost: params.cost,
+        custom_attributes: params.customAttributes,
+      }),
+
+      headers: {
+        "athina-api-key": process.env.ATHINA_API_KEY ?? "",
+        "Content-Type": "application/json",
+      },
+    });
+  } catch (error) {
+    console.error("Failed to log to Athina:", error);
+  }
+}

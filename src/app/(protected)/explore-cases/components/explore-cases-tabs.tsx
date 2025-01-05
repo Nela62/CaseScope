@@ -1,7 +1,6 @@
 import { TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ChevronDown } from "lucide-react";
 
-// TODO: Low: Standardize the color of borders
 export const ExploreCasesTabs = ({ tabs }: { tabs: string[] }) => {
   return (
     <div className="">

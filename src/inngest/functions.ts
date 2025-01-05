@@ -6,6 +6,7 @@ import { serviceClient } from "@/lib/supabase/service";
 import { getExtractor } from "@/lib/extractors";
 import { Extractor, ExtractorType } from "@/types/extractor";
 import { ThrottlingException } from "@aws-sdk/client-bedrock-runtime";
+import { logToAthina } from "@/lib/utils";
 
 // TODO: Medium: Use Athina AI for observability
 // TODO: High: Rate limit exceeded: Too many tokens per min, please wait before trying again.
@@ -15,7 +16,7 @@ const extractData = async (text: string, extractor: Extractor) => {
   const llm = new Bedrock({
     model: "anthropic.claude-3-5-sonnet-20241022-v2:0",
     region: "us-west-2",
-    maxTokens: 2048,
+    maxTokens: 8192,
     credentials: {
       accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
       secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
@@ -29,6 +30,27 @@ const extractData = async (text: string, extractor: Extractor) => {
   // TODO: High: add retry-after on rate limit error
   try {
     const { text: response } = await llm.complete({ prompt });
+
+    try {
+      await logToAthina({
+        promptSlug: `extract-data-${extractor.name}`,
+        prompt: [
+          // {
+          //   role: "system",
+          //   content:
+          //     "You are an expert at answering questions about the world.",
+          // },
+          {
+            role: "user",
+            content: prompt,
+          },
+        ],
+        response: response,
+        languageModelId: "claude-3-5-sonnet-20241022",
+      });
+    } catch (error) {
+      console.log("error", error);
+    }
 
     try {
       const extractedDataMatch = response.match(
@@ -279,7 +301,9 @@ export const processNewDocument = inngest.createFunction(
             issue_details: issue.issueDetails,
             duration: issue.duration,
             tenant_evidence: issue.tenantEvidence,
-            landlord_counterarguments: issue.landlordCounterarguments,
+            tenant_citations: issue.tenantCitations,
+            landlord_response: issue.landlordResponse,
+            landlord_citations: issue.landlordCitations,
             landlord_evidence: issue.landlordEvidence,
             decision: issue.decision,
             relief_granted: issue.reliefGranted,

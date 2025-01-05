@@ -19,7 +19,7 @@ type GroupData = {
   landlord_name?: string;
   tenant_evidence: string[];
   landlord_evidence: string[];
-  landlord_counterarguments: string[];
+  landlord_response: string[];
   pro_tenant_decisions: number;
   pro_landlord_decisions: number;
   total_relief_amount: number;
@@ -52,13 +52,15 @@ export const getIssues = (
       issue_details: issue.issue_details,
       duration: issue.duration,
       tenant_evidence: issue.tenant_evidence,
+      tenant_citations: issue.tenant_citations,
       landlord_evidence: issue.landlord_evidence,
-      landlord_counterarguments: issue.landlord_counterarguments,
+      landlord_citations: issue.landlord_citations,
+      landlord_response: issue.landlord_response,
       decision: issue.decision,
       relief_granted: issue.relief_granted,
       relief_amount: issue.relief_amount,
-      relief_reason: issue.relief_reason,
       relief_description: issue.relief_description,
+      relief_reason: issue.relief_reason,
       // TODO: High: Adjust the type to contain landlord name and property address
       landlord_name: issue.case_id.landlord_name,
       property_address: issue.case_id.property_address,
@@ -70,6 +72,38 @@ export const getIssues = (
       { field: "issue_type", headerName: "Issue Type", filter: true },
       { field: "issue_details", headerName: "Issue Details", filter: true },
       { field: "duration", headerName: "Duration", filter: true },
+      { field: "decision", headerName: "Decision", filter: true },
+      { field: "relief_granted", headerName: "Relief Granted", filter: true },
+      {
+        field: "relief_amount",
+        headerName: "Relief Amount",
+        filter: true,
+        valueFormatter: (params: ValueFormatterParams) =>
+          `$${params.value ? params.value.toLocaleString() : 0}`,
+      },
+      {
+        field: "relief_description",
+        headerName: "Relief Description",
+        filter: true,
+      },
+      {
+        field: "property_address",
+        headerName: "Property Address",
+        filter: true,
+        valueFormatter: (params: ValueFormatterParams) =>
+          displayAddress(params.value),
+      },
+      { field: "landlord_name", headerName: "Landlord Name", filter: true },
+      {
+        field: "tenant_citations",
+        headerName: "Tenant Citations",
+        filter: true,
+        valueGetter: (p: ValueGetterParams) =>
+          p.data.tenant_citations
+            ? `- ${p.data.tenant_citations.join("\n- ")}`
+            : "",
+        cellStyle: { whiteSpace: "pre", textWrap: "wrap" },
+      },
       {
         field: "tenant_evidence",
         headerName: "Tenant Evidence",
@@ -91,33 +125,25 @@ export const getIssues = (
         cellStyle: { whiteSpace: "pre", textWrap: "wrap" },
       },
       {
-        field: "landlord_counterarguments",
-        headerName: "Landlord Counterarguments",
+        field: "landlord_citations",
+        headerName: "Landlord Citations",
         filter: true,
         valueGetter: (p: ValueGetterParams) =>
-          p.data.landlord_counterarguments
-            ? `- ${p.data.landlord_counterarguments.join("\n- ")}`
+          p.data.landlord_citations
+            ? `- ${p.data.landlord_citations.join("\n- ")}`
             : "",
         cellStyle: { whiteSpace: "pre", textWrap: "wrap" },
       },
-      { field: "decision", headerName: "Decision", filter: true },
-      { field: "relief_granted", headerName: "Relief Granted", filter: true },
       {
-        field: "relief_amount",
-        headerName: "Relief Amount",
+        field: "landlord_response",
+        headerName: "Landlord Response",
         filter: true,
-        valueFormatter: (params: ValueFormatterParams) =>
-          `$${params.value.toLocaleString()}`,
+        valueGetter: (p: ValueGetterParams) =>
+          p.data.landlord_response
+            ? `- ${p.data.landlord_response.join("\n- ")}`
+            : "",
+        cellStyle: { whiteSpace: "pre", textWrap: "wrap" },
       },
-      { field: "relief_reason", headerName: "Relief Reason", filter: true },
-      {
-        field: "property_address",
-        headerName: "Property Address",
-        filter: true,
-        valueFormatter: (params: ValueFormatterParams) =>
-          displayAddress(params.value),
-      },
-      { field: "landlord_name", headerName: "Landlord Name", filter: true },
     ];
 
     return { data, columns };
@@ -131,7 +157,7 @@ export const getIssues = (
           category: key,
           tenant_evidence: [],
           landlord_evidence: [],
-          landlord_counterarguments: [],
+          landlord_response: [],
           pro_tenant_decisions: 0,
           pro_landlord_decisions: 0,
           total_relief_amount: 0,
@@ -146,10 +172,8 @@ export const getIssues = (
         group.tenant_evidence.push(...issue.tenant_evidence);
       if (issue.landlord_evidence)
         group.landlord_evidence.push(...issue.landlord_evidence);
-      if (issue.landlord_counterarguments)
-        group.landlord_counterarguments.push(
-          ...issue.landlord_counterarguments
-        );
+      if (issue.landlord_response)
+        group.landlord_response.push(...issue.landlord_response);
 
       // Count decisions
       if (issue.decision === "pro-tenant") group.pro_tenant_decisions++;
@@ -207,17 +231,16 @@ export const getIssues = (
         cellStyle: { whiteSpace: "pre", textWrap: "wrap" },
       },
       {
-        field: "landlord_counterarguments",
-        headerName: "Landlord Counterarguments",
+        field: "landlord_response",
+        headerName: "Landlord Response",
         filter: true,
         valueGetter: (p: ValueGetterParams) =>
-          p.data.landlord_counterarguments.length > 0
-            ? `- ${[...new Set(p.data.landlord_counterarguments)].join("\n- ")}`
+          p.data.landlord_response.length > 0
+            ? `- ${[...new Set(p.data.landlord_response)].join("\n- ")}`
             : "",
         cellStyle: { whiteSpace: "pre", textWrap: "wrap" },
       },
     ];
-
 
     return {
       data: Object.values(data),
@@ -234,7 +257,7 @@ export const getIssues = (
           subcategory: key,
           tenant_evidence: [],
           landlord_evidence: [],
-          landlord_counterarguments: [],
+          landlord_response: [],
           pro_tenant_decisions: 0,
           pro_landlord_decisions: 0,
           total_relief_amount: 0,
@@ -249,10 +272,8 @@ export const getIssues = (
         group.tenant_evidence.push(...issue.tenant_evidence);
       if (issue.landlord_evidence)
         group.landlord_evidence.push(...issue.landlord_evidence);
-      if (issue.landlord_counterarguments)
-        group.landlord_counterarguments.push(
-          ...issue.landlord_counterarguments
-        );
+      if (issue.landlord_response)
+        group.landlord_response.push(...issue.landlord_response);
 
       // Count decisions
       if (issue.decision === "pro-tenant") group.pro_tenant_decisions++;
@@ -310,12 +331,12 @@ export const getIssues = (
         cellStyle: { whiteSpace: "pre", textWrap: "wrap" },
       },
       {
-        field: "landlord_counterarguments",
-        headerName: "Landlord Counterarguments",
+        field: "landlord_response",
+        headerName: "Landlord Response",
         filter: true,
         valueGetter: (p: ValueGetterParams) =>
-          p.data.landlord_counterarguments.length > 0
-            ? `- ${[...new Set(p.data.landlord_counterarguments)].join("\n- ")}`
+          p.data.landlord_response.length > 0
+            ? `- ${[...new Set(p.data.landlord_response)].join("\n- ")}`
             : "",
         cellStyle: { whiteSpace: "pre", textWrap: "wrap" },
       },
@@ -337,7 +358,7 @@ export const getIssues = (
           issue_type: key,
           tenant_evidence: [],
           landlord_evidence: [],
-          landlord_counterarguments: [],
+          landlord_response: [],
           pro_tenant_decisions: 0,
           pro_landlord_decisions: 0,
           total_relief_amount: 0,
@@ -352,10 +373,8 @@ export const getIssues = (
         group.tenant_evidence.push(...issue.tenant_evidence);
       if (issue.landlord_evidence)
         group.landlord_evidence.push(...issue.landlord_evidence);
-      if (issue.landlord_counterarguments)
-        group.landlord_counterarguments.push(
-          ...issue.landlord_counterarguments
-        );
+      if (issue.landlord_response)
+        group.landlord_response.push(...issue.landlord_response);
 
       // Count decisions
       if (issue.decision === "pro-tenant") group.pro_tenant_decisions++;
@@ -414,12 +433,12 @@ export const getIssues = (
         cellStyle: { whiteSpace: "pre", textWrap: "wrap" },
       },
       {
-        field: "landlord_counterarguments",
-        headerName: "Landlord Counterarguments",
+        field: "landlord_response",
+        headerName: "Landlord Response",
         filter: true,
         valueGetter: (p: ValueGetterParams) =>
-          p.data.landlord_counterarguments.length > 0
-            ? `- ${[...new Set(p.data.landlord_counterarguments)].join("\n- ")}`
+          p.data.landlord_response.length > 0
+            ? `- ${[...new Set(p.data.landlord_response)].join("\n- ")}`
             : "",
         cellStyle: { whiteSpace: "pre", textWrap: "wrap" },
       },

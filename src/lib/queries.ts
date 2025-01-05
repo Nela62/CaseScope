@@ -73,7 +73,7 @@ export const fetchIssuesByDocumentId = (
   return supabase
     .from("issues")
     .select(
-      "id, document_id,  category, subcategory, issue_type, issue_details, duration, tenant_evidence, landlord_counterarguments, landlord_evidence, decision, relief_granted, relief_description, relief_amount, relief_reason, created_at"
+      "id, document_id,  category, subcategory, issue_type, issue_details, duration, tenant_evidence, tenant_citations, landlord_response, landlord_citations, landlord_evidence, decision, relief_granted, relief_description, relief_amount, relief_reason, created_at"
     )
     .eq("document_id", documentId)
     .throwOnError();
@@ -86,7 +86,7 @@ export const fetchPublicIssuesByDocumentId = (
   return supabase
     .from("public_issues")
     .select(
-      "id, document_id, category, subcategory, issue_type, issue_details, duration, tenant_evidence, landlord_counterarguments, landlord_evidence, decision, relief_granted, relief_description, relief_amount, relief_reason, created_at"
+      "id, document_id, category, subcategory, issue_type, issue_details, duration, tenant_evidence, tenant_citations, landlord_response, landlord_citations, landlord_evidence, decision, relief_granted, relief_description, relief_amount, relief_reason, created_at"
     )
     .eq("document_id", documentId)
     .throwOnError();
@@ -96,7 +96,7 @@ export const fetchAllIssues = (supabase: TypedSupabaseClient) => {
   return supabase
     .from("issues")
     .select(
-      "id, document_id, case_id (id, hearing_dates, hearing_officer, landlord_name, property_address, case_numbers, decision, reasoning, total_relief_granted, length_of_tenancy, created_at), category, subcategory, issue_type, issue_details, duration, tenant_evidence, landlord_counterarguments, landlord_evidence, decision, relief_granted, relief_description, relief_amount, relief_reason, created_at"
+      "id, document_id, case_id (id, hearing_dates, hearing_officer, landlord_name, property_address, case_numbers, decision, reasoning, total_relief_granted, length_of_tenancy, created_at), category, subcategory, issue_type, issue_details, duration, tenant_evidence, tenant_citations, landlord_response, landlord_citations, landlord_evidence, decision, relief_granted, relief_description, relief_amount, relief_reason, created_at"
     )
     .throwOnError();
 };
@@ -105,7 +105,7 @@ export const fetchAllPublicIssues = (supabase: TypedSupabaseClient) => {
   return supabase
     .from("public_issues")
     .select(
-      "id, document_id, category, subcategory, issue_type, issue_details, duration, tenant_evidence, landlord_counterarguments, landlord_evidence, decision, relief_granted, relief_description, relief_amount, relief_reason, created_at"
+      "id, document_id, case_id (id, hearing_dates, hearing_officer, landlord_name, property_address, case_numbers, decision, reasoning, total_relief_granted, length_of_tenancy, created_at), category, subcategory, issue_type, issue_details, duration, tenant_evidence, tenant_citations, landlord_response, landlord_citations, landlord_evidence, decision, relief_granted, relief_description, relief_amount, relief_reason, created_at"
     )
     .throwOnError();
 };

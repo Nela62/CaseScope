@@ -4,10 +4,12 @@ import * as tenantIssues from "./tenant-issues";
 
 const extractors: Record<ExtractorType, Extractor> = {
   [ExtractorType.CASE_DETAILS]: {
+    name: "case-details",
     promptTemplate: caseDetails.promptTemplate,
     jsonSchema: caseDetails.jsonSchema,
   },
   [ExtractorType.TENANT_ISSUES]: {
+    name: "tenant-issues",
     promptTemplate: tenantIssues.promptTemplate,
     jsonSchema: tenantIssues.jsonSchema,
   },

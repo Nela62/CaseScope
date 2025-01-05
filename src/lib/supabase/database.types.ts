@@ -103,13 +103,15 @@ export type Database = {
           id: string
           issue_details: string | null
           issue_type: string | null
-          landlord_counterarguments: string[] | null
+          landlord_citations: string[] | null
           landlord_evidence: string[] | null
+          landlord_response: string[] | null
           relief_amount: number | null
           relief_description: string | null
           relief_granted: boolean | null
           relief_reason: string | null
           subcategory: string | null
+          tenant_citations: string[] | null
           tenant_evidence: string[] | null
           updated_at: string
           user_id: string
@@ -124,13 +126,15 @@ export type Database = {
           id?: string
           issue_details?: string | null
           issue_type?: string | null
-          landlord_counterarguments?: string[] | null
+          landlord_citations?: string[] | null
           landlord_evidence?: string[] | null
+          landlord_response?: string[] | null
           relief_amount?: number | null
           relief_description?: string | null
           relief_granted?: boolean | null
           relief_reason?: string | null
           subcategory?: string | null
+          tenant_citations?: string[] | null
           tenant_evidence?: string[] | null
           updated_at?: string
           user_id: string
@@ -145,13 +149,15 @@ export type Database = {
           id?: string
           issue_details?: string | null
           issue_type?: string | null
-          landlord_counterarguments?: string[] | null
+          landlord_citations?: string[] | null
           landlord_evidence?: string[] | null
+          landlord_response?: string[] | null
           relief_amount?: number | null
           relief_description?: string | null
           relief_granted?: boolean | null
           relief_reason?: string | null
           subcategory?: string | null
+          tenant_citations?: string[] | null
           tenant_evidence?: string[] | null
           updated_at?: string
           user_id?: string
@@ -261,13 +267,15 @@ export type Database = {
           id: string
           issue_details: string | null
           issue_type: string | null
-          landlord_counterarguments: string[] | null
+          landlord_citations: string[] | null
           landlord_evidence: string[] | null
+          landlord_response: string[] | null
           relief_amount: number | null
           relief_description: string | null
           relief_granted: boolean | null
           relief_reason: string | null
           subcategory: string | null
+          tenant_citations: string[] | null
           tenant_evidence: string[] | null
           updated_at: string
         }
@@ -281,13 +289,15 @@ export type Database = {
           id?: string
           issue_details?: string | null
           issue_type?: string | null
-          landlord_counterarguments?: string[] | null
+          landlord_citations?: string[] | null
           landlord_evidence?: string[] | null
+          landlord_response?: string[] | null
           relief_amount?: number | null
           relief_description?: string | null
           relief_granted?: boolean | null
           relief_reason?: string | null
           subcategory?: string | null
+          tenant_citations?: string[] | null
           tenant_evidence?: string[] | null
           updated_at?: string
         }
@@ -301,13 +311,15 @@ export type Database = {
           id?: string
           issue_details?: string | null
           issue_type?: string | null
-          landlord_counterarguments?: string[] | null
+          landlord_citations?: string[] | null
           landlord_evidence?: string[] | null
+          landlord_response?: string[] | null
           relief_amount?: number | null
           relief_description?: string | null
           relief_granted?: boolean | null
           relief_reason?: string | null
           subcategory?: string | null
+          tenant_citations?: string[] | null
           tenant_evidence?: string[] | null
           updated_at?: string
         }

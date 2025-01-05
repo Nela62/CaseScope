@@ -8,6 +8,7 @@ export function isValidExtractorType(value: string): boolean {
 }
 
 export interface Extractor {
+  name: string;
   promptTemplate: string;
   jsonSchema: object;
 }

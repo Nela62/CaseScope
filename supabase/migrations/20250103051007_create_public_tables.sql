@@ -59,7 +59,9 @@ CREATE TABLE IF NOT EXISTS public_issues(
   issue_details text,
   duration text,
   tenant_evidence text[],
-  landlord_counterarguments text[],
+  tenant_citations text[],
+  landlord_response text[],
+  landlord_citations text[],
   landlord_evidence text[],
   decision text,
   relief_granted boolean,
@@ -77,4 +79,16 @@ ALTER TABLE public.public_issues ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Enable SELECT to authenticated users for public issues" ON "public"."public_issues" AS permissive
   FOR SELECT TO "authenticated"
     USING (TRUE);
+
+ALTER TABLE public.issues
+  DROP COLUMN landlord_counterarguments;
+
+ALTER TABLE public.issues
+  ADD COLUMN landlord_response text[];
+
+ALTER TABLE public.issues
+  ADD COLUMN tenant_citations text[];
+
+ALTER TABLE public.issues
+  ADD COLUMN landlord_citations text[];
 

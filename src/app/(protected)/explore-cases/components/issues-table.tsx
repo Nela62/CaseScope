@@ -1,11 +1,12 @@
 import { createClient } from "@/lib/supabase/client";
 import { useQuery } from "@supabase-cache-helpers/postgrest-react-query";
-import { fetchAllIssues } from "@/lib/queries";
+import { fetchAllIssues, fetchAllPublicIssues } from "@/lib/queries";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AGTable } from "@/components/ui/ag-table";
 import RadioGroupCardsRow from "@/components/ui/radio-group-cards-row";
 import { useMemo, useState } from "react";
 import { getIssues } from "./get-issues";
+import { useUser } from "@/providers/user-provider";
 
 export const groupByOptions = [
   "None",
@@ -17,7 +18,13 @@ export const groupByOptions = [
 
 export const IssuesTable = () => {
   const supabase = createClient();
-  const { data: issues, error } = useQuery(fetchAllIssues(supabase));
+  const { isAnonymous } = useUser();
+
+  const fetchFn = isAnonymous
+    ? fetchAllPublicIssues(supabase)
+    : fetchAllIssues(supabase);
+
+  const { data: issues, error } = useQuery(fetchFn);
   const [groupBy, setGroupBy] = useState("None");
 
   const { data, columns } = useMemo(
