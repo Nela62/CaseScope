@@ -6,7 +6,7 @@ import {
 } from "@supabase-cache-helpers/postgrest-react-query";
 import { format } from "date-fns";
 import { createClient } from "@/lib/supabase/client";
-import { fetchAllDocuments } from "@/lib/queries";
+import { fetchAllDocuments, fetchAllPublicDocuments } from "@/lib/queries";
 import { ColumnDef, Row } from "@tanstack/react-table";
 import { DataTable } from "@/components/ui/data-table";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -36,11 +36,17 @@ type Document = {
 // TODO: High: Adds a document to the list before it's fully processed
 export const CaseLibraryTable = () => {
   const supabase = createClient();
-  const { data: documents, isLoading } = useQuery(fetchAllDocuments(supabase));
-  const { setSelectedCaseId } = useAppStore((state) => state);
   const { userId, isAnonymous } = useUser();
 
+  const fetchFn = isAnonymous
+    ? fetchAllPublicDocuments(supabase)
+    : fetchAllDocuments(supabase);
+
+  const { data: documents, isLoading } = useQuery(fetchFn);
+  const { setSelectedCaseId } = useAppStore((state) => state);
+
   useEffect(() => {
+    console.log("documents", documents);
     if (documents && documents.length > 0) {
       setSelectedCaseId(documents[0].id);
     }

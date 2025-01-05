@@ -7,7 +7,7 @@ import { prefetchQuery } from "@supabase-cache-helpers/postgrest-react-query";
 
 import { CaseLibraryComponent } from "./case-library-component";
 import { createClient } from "@/lib/supabase/server";
-import { fetchAllDocuments } from "@/lib/queries";
+import { fetchAllDocuments, fetchAllPublicDocuments } from "@/lib/queries";
 
 export default async function CaseLibraryPage() {
   const supabase = await createClient();
@@ -16,6 +16,7 @@ export default async function CaseLibraryPage() {
   // TODO: Low: Consider prefetching issues and case details
 
   await prefetchQuery(queryClient, fetchAllDocuments(supabase));
+  await prefetchQuery(queryClient, fetchAllPublicDocuments(supabase));
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
