@@ -1,7 +1,7 @@
 "use client";
 
 import { Skeleton } from "@/components/ui/skeleton";
-import { fetchDocumentById } from "@/lib/queries";
+import { fetchDocumentById, fetchPublicDocumentById } from "@/lib/queries";
 import { createClient } from "@/lib/supabase/client";
 import { useAppStore } from "@/providers/app-store-provider";
 import { useUser } from "@/providers/user-provider";
@@ -18,16 +18,19 @@ import { useFileUrl } from "@supabase-cache-helpers/storage-react-query";
 
 export const PdfViewer = () => {
   const supabase = createClient();
+  const { userId, isAnonymous } = useUser();
+
   const { selectedCaseId } = useAppStore((state) => state);
   const { data: document } = useQuery(
-    fetchDocumentById(supabase, selectedCaseId ?? ""),
+    isAnonymous
+      ? fetchPublicDocumentById(supabase, selectedCaseId ?? "")
+      : fetchDocumentById(supabase, selectedCaseId ?? ""),
     { enabled: !!selectedCaseId }
   );
-  const { userId } = useUser();
 
   const { data: fileUrl } = useFileUrl(
-    supabase.storage.from("documents"),
-    `${userId}/${document?.name}`,
+    supabase.storage.from(isAnonymous ? "public_documents" : "documents"),
+    isAnonymous ? `${document?.name}` : `${userId}/${document?.name}`,
     "private",
     { enabled: !!document }
   );
