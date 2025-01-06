@@ -48,7 +48,11 @@ export async function POST(request: Request) {
     // TODO: Low: add logging for the upload errors
 
     if (filePaths.some((filePath) => filePath.error)) {
-      return new Response("Failed to upload files", { status: 500 });
+      console.error("Failed to upload files", filePaths);
+      return new Response(
+        "Failed to upload files: " + JSON.stringify(filePaths),
+        { status: 500 }
+      );
     }
 
     const { ids } = await inngest.send(

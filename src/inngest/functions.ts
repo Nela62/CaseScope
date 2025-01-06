@@ -283,9 +283,7 @@ export const processNewDocument = inngest.createFunction(
         );
       }
 
-      const issues = issuesRes.issues;
-
-      console.log("issuesRes", issuesRes);
+      const issues = "issues" in issuesRes ? issuesRes.issues : issuesRes;
 
       try {
         // TODO: High: Update the database to new schema
