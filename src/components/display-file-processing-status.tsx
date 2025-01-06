@@ -77,6 +77,7 @@ export const DisplayFileProcessingStatus = () => {
   const updateRun = useCallback(
     (eventId: string, run: Run) => {
       let completeEvent = false;
+      console.log("run", run.status);
 
       setFileEvents((prevEvents) => {
         const newRuns = prevEvents[eventId].runs.map((r) =>
@@ -86,6 +87,8 @@ export const DisplayFileProcessingStatus = () => {
         if (newRuns.every((r) => r.status === "Complete")) {
           completeEvent = true;
         }
+
+        console.log("newRuns", newRuns);
 
         return {
           ...prevEvents,

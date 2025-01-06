@@ -8,7 +8,7 @@ export function cn(...inputs: ClassValue[]) {
 
 // FIXME: High: Still returns null event without retrying
 export async function getEvent(eventId: string) {
-  const maxRetries = 5;
+  const maxRetries = 10;
   let retryCount = 0;
   let error = null;
 
@@ -25,7 +25,13 @@ export async function getEvent(eventId: string) {
 
       if (response.ok && response.status !== 404) {
         const json = await response.json();
-        console.log(`event json for ${eventId}`, json);
+
+        if (json.data.status === 404) {
+          retryCount++;
+          if (retryCount < maxRetries) {
+            await new Promise((resolve) => setTimeout(resolve, 1000));
+          }
+        }
         return json.data;
       } else {
         retryCount++;
