@@ -5,6 +5,7 @@ export type AppState = {
   fileProcessingEvents: {
     name: string;
     id: string;
+    status: string;
   }[];
 };
 

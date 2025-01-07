@@ -279,7 +279,12 @@ export const processNewDocument = inngest.createFunction(
         );
       }
 
-      const issues = "issues" in issuesRes ? issuesRes.issues : issuesRes;
+      const issues =
+        "issues" in issuesRes
+          ? issuesRes.issues
+          : "items" in issuesRes
+          ? issuesRes.items
+          : issuesRes;
 
       try {
         // TODO: High: Add json parsing with retry on fail

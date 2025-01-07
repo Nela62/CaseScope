@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { useAppStore } from "@/providers/app-store-provider";
 import { Run } from "@/types/inngest";
 import { useState } from "react";
@@ -14,6 +14,7 @@ import {
 } from "./ui/dialog";
 import { Button } from "./ui/button";
 import { useQueryClient } from "@tanstack/react-query";
+import { CheckIcon } from "lucide-react";
 
 type ProcessingRun = { id: string; status: string };
 type ProcessingFiles = {
@@ -76,6 +77,7 @@ export const DisplayFileProcessingStatus = () => {
   const updateRun = useCallback(
     (eventId: string, run: Run) => {
       let completeEvent = false;
+      let failed = false;
 
       setFileEvents((prevEvents) => {
         const newRuns = prevEvents[eventId].runs.map((r) =>
@@ -86,11 +88,19 @@ export const DisplayFileProcessingStatus = () => {
           completeEvent = true;
         }
 
+        if (newRuns.some((r) => r.status === "Failed")) {
+          failed = true;
+        }
+
         return {
           ...prevEvents,
           [eventId]: {
             name: prevEvents[eventId].name,
-            status: completeEvent ? "Completed" : "In progress",
+            status: failed
+              ? "Failed"
+              : completeEvent
+              ? "Completed"
+              : "In progress",
             runs: newRuns,
             startedAt: prevEvents[eventId].startedAt,
           },
@@ -197,6 +207,13 @@ export const DisplayFileProcessingStatus = () => {
     };
   }, [fileProcessingEvents, addEvent, addRun, updateRun, fileEvents]);
 
+  const areFilesCompleted = useMemo(
+    () =>
+      Object.values(fileEvents).filter((file) => file.status === "In progress")
+        .length === 0,
+    [fileEvents]
+  );
+
   return (
     fileProcessingEvents.length > 0 && (
       <Dialog>
@@ -204,10 +221,28 @@ export const DisplayFileProcessingStatus = () => {
           <Button variant="outline" className="text-sm text-foreground/70">
             Files Processing
             <div className="ml-1 relative h-6 w-6">
-              <div className="absolute inset-0 rounded-full border-2 border-sky-600/30 border-t-sky-600 animate-spin" />
-              <span className="absolute inset-0 inline-flex items-center justify-center text-xs text-sky-600 font-semibold">
-                {fileProcessingEvents.length}
-              </span>
+              {areFilesCompleted ? (
+                <>
+                  <div className="absolute inset-0 rounded-full border-2 border-emerald-600/30 border-emerald-600" />
+                  <span className="absolute inset-0 inline-flex items-center justify-center text-xs text-emerald-600 font-semibold">
+                    <CheckIcon className="h-4 w-4" />
+                  </span>
+                </>
+              ) : (
+                <>
+                  <div className="absolute inset-0 rounded-full border-2 border-sky-600/30 border-t-sky-600 animate-spin" />
+                  <span className="absolute inset-0 inline-flex items-center justify-center text-xs text-sky-600 font-semibold">
+                    {
+                      // fileProcessingEvents.filter(
+                      //   (event) => event.status === "In progress"
+                      // ).length
+                      Object.values(fileEvents).filter(
+                        (file) => file.status === "In progress"
+                      ).length
+                    }
+                  </span>
+                </>
+              )}
             </div>
           </Button>
         </DialogTrigger>
