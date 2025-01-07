@@ -8,8 +8,7 @@ import { Extractor, ExtractorType } from "@/types/extractor";
 import { ThrottlingException } from "@aws-sdk/client-bedrock-runtime";
 import { logToAthina } from "@/lib/utils";
 
-// TODO: Medium: Use Athina AI for observability
-// TODO: High: Rate limit exceeded: Too many tokens per min, please wait before trying again.
+// TODO: High: Rate limit exceeded error - still not good enough throttling
 // TODO: High: When fails, it should delete or the user can't reupload
 
 const extractData = async (text: string, extractor: Extractor) => {
@@ -27,7 +26,6 @@ const extractData = async (text: string, extractor: Extractor) => {
     .replace("{{TEXT}}", text)
     .replace("{{JSON_SCHEMA}}", JSON.stringify(extractor.jsonSchema));
 
-  // TODO: High: add retry-after on rate limit error
   try {
     const { text: response } = await llm.complete({ prompt });
 
@@ -140,7 +138,6 @@ const extractData = async (text: string, extractor: Extractor) => {
 // });
 
 // TODO: Low: when the run fails, it should delete the document row from the db, the file from the storage, and any stored extracted data
-// BUG: Cannot read properties of undefined (reading 'caseNumbers') - store-in-db
 
 export const processNewDocument = inngest.createFunction(
   { id: "process-new-document" },
@@ -217,14 +214,13 @@ export const processNewDocument = inngest.createFunction(
       }
     });
 
-    // TODO: Low: add JSON schema validation
-    // TODO: Medium: add retry-after on rate limit error
     // TODO: Low: Add a list of already existing landlords
 
     const caseId = await step.run("extract-case-details", async () => {
       const caseDetailsExtractor = getExtractor(ExtractorType.CASE_DETAILS);
       const caseDetails = await extractData(text, caseDetailsExtractor);
 
+      // TODO: High: Add json parsing with retry on fail
       try {
         const { data: caseData, error: caseError } = await supabase
           .from("hearing_cases")
@@ -286,7 +282,7 @@ export const processNewDocument = inngest.createFunction(
       const issues = "issues" in issuesRes ? issuesRes.issues : issuesRes;
 
       try {
-        // TODO: High: Update the database to new schema
+        // TODO: High: Add json parsing with retry on fail
         const { error: issuesError } = await supabase.from("issues").insert(
           // @ts-expect-error for later
           issues.map((issue) => ({

@@ -104,7 +104,7 @@ export function createRunPoller(
     try {
       const run = await getRun(runId);
       onUpdate(run);
-
+      console.log("run", run);
       if (run.status === "Completed") {
         clearInterval(intervalId);
       }

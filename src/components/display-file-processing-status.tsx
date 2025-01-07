@@ -27,7 +27,7 @@ type ProcessingFiles = {
 // TODO: Medium: This takes a moment to show up
 
 const statuses = {
-  Complete: "text-green-700 bg-green-50 ring-green-600/20",
+  Completed: "text-green-700 bg-green-50 ring-green-600/20",
   "In progress": "text-gray-600 bg-gray-50 ring-gray-500/10",
   Failed: "text-red-800 bg-red-50 ring-red-600/20",
 };
@@ -67,34 +67,30 @@ const DisplayTaskStatus = ({
   );
 };
 
-// TODO: High: Improve the UI
+// TODO: High: Make sure it displays the failed status
 export const DisplayFileProcessingStatus = () => {
   const { fileProcessingEvents } = useAppStore((state) => state);
   const [fileEvents, setFileEvents] = useState<ProcessingFiles>({});
   const queryClient = useQueryClient();
 
-  // BUG: Doesn't complete the run
   const updateRun = useCallback(
     (eventId: string, run: Run) => {
       let completeEvent = false;
-      console.log("run", run.status);
 
       setFileEvents((prevEvents) => {
         const newRuns = prevEvents[eventId].runs.map((r) =>
           r.id === run.run_id ? { id: r.id, status: run.status } : r
         );
 
-        if (newRuns.every((r) => r.status === "Complete")) {
+        if (newRuns.every((r) => r.status === "Completed")) {
           completeEvent = true;
         }
-
-        console.log("newRuns", newRuns);
 
         return {
           ...prevEvents,
           [eventId]: {
             name: prevEvents[eventId].name,
-            status: completeEvent ? "Complete" : "In progress",
+            status: completeEvent ? "Completed" : "In progress",
             runs: newRuns,
             startedAt: prevEvents[eventId].startedAt,
           },
@@ -113,6 +109,8 @@ export const DisplayFileProcessingStatus = () => {
 
   const addRun = useCallback(
     (eventId: string, run: Run) => {
+      console.log("adding run");
+
       setFileEvents((prevEvents) => ({
         ...prevEvents,
         [eventId]: {
@@ -128,6 +126,7 @@ export const DisplayFileProcessingStatus = () => {
           startedAt: prevEvents[eventId].startedAt,
         },
       }));
+
       const cleanup = createRunPoller(
         run.run_id,
         (updatedRun: Run) => {
@@ -137,6 +136,7 @@ export const DisplayFileProcessingStatus = () => {
           console.error("Error polling run:", error);
         }
       );
+
       return cleanup;
     },
     [setFileEvents, updateRun]
@@ -158,6 +158,7 @@ export const DisplayFileProcessingStatus = () => {
           },
         }));
       }
+
       eventRuns.forEach((run) => {
         addRun(event.id, run);
       });
@@ -171,17 +172,15 @@ export const DisplayFileProcessingStatus = () => {
     if (fileProcessingEvents.length > 0) {
       fileProcessingEvents.forEach(
         async (event: { name: string; id: string }) => {
-          const eventRuns = await getRuns(event.id);
-
           if (!fileEvents[event.id]) {
             const eventData = await getEvent(event.id);
-            console.log("eventData", eventData);
-            console.log("received_at", eventData.received_at);
+            const eventRuns = await getRuns(event.id);
             addEvent(
               { ...event, startedAt: new Date(eventData.received_at) },
               eventRuns
             );
           } else {
+            const eventRuns = await getRuns(event.id);
             eventRuns.forEach((run: Run) => {
               if (!fileEvents[event.id].runs.some((r) => r.id === run.run_id)) {
                 const cleanup = addRun(event.id, run);

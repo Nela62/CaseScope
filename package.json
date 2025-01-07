@@ -27,6 +27,7 @@
     "@radix-ui/react-tabs": "^1.1.2",
     "@react-pdf-viewer/core": "3.12.0",
     "@react-pdf-viewer/default-layout": "^3.12.0",
+    "@react-pdf-viewer/toolbar": "^3.12.0",
     "@supabase-cache-helpers/postgrest-react-query": "^1.11.4",
     "@supabase-cache-helpers/storage-react-query": "^1.2.4",
     "@supabase/ssr": "^0.5.2",
