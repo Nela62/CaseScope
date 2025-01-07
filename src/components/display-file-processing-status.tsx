@@ -68,7 +68,6 @@ const DisplayTaskStatus = ({
   );
 };
 
-// TODO: High: Make sure it displays the failed status
 export const DisplayFileProcessingStatus = () => {
   const { fileProcessingEvents } = useAppStore((state) => state);
   const [fileEvents, setFileEvents] = useState<ProcessingFiles>({});
@@ -108,9 +107,13 @@ export const DisplayFileProcessingStatus = () => {
       });
 
       if (completeEvent) {
-        // TODO: Test
+        // TODO: Medium: Ideally should invalidate the query only for this document
         queryClient.invalidateQueries({
-          queryKey: ["documents"],
+          // queryKey: ["documents", { id: fileProcessingEvents.find(e => e.id === eventId)?.id }],
+          queryKey: [
+            "documents",
+            { id: fileProcessingEvents.find((e) => e.id === eventId)?.id },
+          ],
         });
       }
     },
@@ -233,9 +236,6 @@ export const DisplayFileProcessingStatus = () => {
                   <div className="absolute inset-0 rounded-full border-2 border-sky-600/30 border-t-sky-600 animate-spin" />
                   <span className="absolute inset-0 inline-flex items-center justify-center text-xs text-sky-600 font-semibold">
                     {
-                      // fileProcessingEvents.filter(
-                      //   (event) => event.status === "In progress"
-                      // ).length
                       Object.values(fileEvents).filter(
                         (file) => file.status === "In progress"
                       ).length

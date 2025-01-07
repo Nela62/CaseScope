@@ -1,5 +1,6 @@
 export const DisplayValue = ({ value }: { value: unknown }) => {
   if (typeof value === "object") {
+    // TODO: Low: Change the address order
     return Object.entries(value as object).map(([addrKey, addrValue]) => (
       <p key={addrKey}>{String(addrValue)}</p>
     ));

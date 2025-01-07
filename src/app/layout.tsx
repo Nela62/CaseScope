@@ -16,13 +16,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Casescope",
-  description: "AI Copilot for Housing Attorneys",
+  description: "AI Paralegal for Housing Attorneys",
 };
-
-// TODO: High: Check if the user is logged in and if not, show the banner
-// TODO: High: Edit the banner to redirect to the login page
-// TODO: High: Users should not be able to upload files without logging in
-// TODO: High: Have sample files with extracted issues to showcase the demo
 
 export default function RootLayout({
   children,

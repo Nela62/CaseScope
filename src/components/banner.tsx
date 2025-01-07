@@ -3,6 +3,7 @@
 // import { ArrowRightIcon } from "lucide-react";
 // import Link from "next/link";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 export const Banner = () => {
   return (
@@ -14,8 +15,12 @@ export const Banner = () => {
       <div className="absolute top-0 left-0 h-full w-full bg-gradient-to-r from-[#fba776] to-[#9089fc] opacity-50 blur-2xl pointer-events-none"></div>
       <p className="text-sm/6 text-gray-900">
         For demo purposes only. Contact{" "}
-        <span className="font-semibold">helen@casescope.law</span> to request
-        access.
+        <span className="font-semibold">team@casescope.law</span> to request
+        access or login{" "}
+        <Link href="/login" className="font-semibold">
+          here
+        </Link>
+        .
         {/* <Link
           href="/login"
           className="font-semibold whitespace-nowrap flex gap-1.5 items-center"
