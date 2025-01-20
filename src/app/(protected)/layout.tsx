@@ -27,9 +27,7 @@ export default async function ProtectedLayout({
           isAnonymous={data.user.is_anonymous ?? true}
         >
           <div className="flex flex-col w-full h-full">
-            <div className="flex-none">
-              <Banner />
-            </div>
+           
             <div className="flex-1 min-h-0">
               <div className="flex lg:flex-row flex-col w-full h-full bg-background">
                 <NavBar />
