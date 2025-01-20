@@ -9,6 +9,8 @@ const nextConfig: NextConfig = {
       "@huggingface/transformers",
     ];
 
+    config.resolve.alias.canvas = false;
+
     config.resolve.fallback = {
       ...config.resolve.fallback,
       fs: false,
