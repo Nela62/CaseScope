@@ -45,9 +45,9 @@ An open-source tool helping legal aid organizations support tenants by analyzing
 
 ## Authors
 - Helen Kochetkova
-- Julia Yu
-- Ashley Kong
-- Fatima Lopez
+
+This project originated from a hackathon collaboration between Helen Kochetkova, Julia Yu, Ashley Kong, and Fatima Lopez.
+
 
 ## License
 This project is open-sourced under the MIT License - see the LICENSE file for details.
